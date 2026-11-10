@@ -19,7 +19,7 @@ describe("Deezer provider", () => {
   ];
 
   it("mapeia faixas e descarta as sem preview", async () => {
-    const fetchMock = vi.fn(async (_url: string) => jsonResponse({ data }));
+    const fetchMock = vi.fn<(url: string) => Promise<Response>>(async () => jsonResponse({ data }));
     const tracks = await createDeezerProvider(fetchMock as never).getTracksByGenre("Pop", 5);
     expect(tracks.map((t) => t.id)).toEqual(["deezer-1", "deezer-3"]);
     expect(tracks[0]).toMatchObject({ title: "A", artist: "X", previewUrl: "http://p/1.mp3", coverUrl: "c1" });
