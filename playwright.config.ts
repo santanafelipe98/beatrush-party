@@ -7,7 +7,14 @@ export default defineConfig({
   webServer: {
     command: "npm run dev",
     url: "http://localhost:3100",
-    env: { PORT: "3100", MUSIC_PROVIDER: "mock" },
+    env: {
+      PORT: "3100",
+      MUSIC_PROVIDER: "mock",
+      VOTE_MS: "15000",
+      ROUND_MS: "15000",
+      REVEAL_MS: "1500",
+      TOTAL_ROUNDS: "2",
+    },
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,
   },
