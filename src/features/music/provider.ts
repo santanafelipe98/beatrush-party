@@ -2,7 +2,7 @@ import type { Genre, Track } from "@/features/game";
 
 /**
  * Porta (hexagonal) para qualquer catálogo de músicas.
- * O jogo só conhece esta interface; Deezer, Spotify ou Mock são adaptadores.
+ * O jogo só conhece esta interface; Deezer e Mock são adaptadores.
  */
 export interface MusicProvider {
   readonly id: string;

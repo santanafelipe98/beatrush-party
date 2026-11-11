@@ -37,13 +37,8 @@ describe("factory", () => {
   it("resolve adaptadores e rejeita desconhecidos", () => {
     expect(createMusicProvider("mock").id).toBe("mock");
     expect(createMusicProvider("deezer").id).toBe("deezer");
-    expect(createMusicProvider("spotify").id).toBe("spotify");
-    expect(() => createMusicProvider("napster")).toThrow();
-  });
-  it("spotify ainda falha de forma explícita", async () => {
-    await expect(createMusicProvider("spotify").getTracksByGenre("Pop", 1)).rejects.toBeInstanceOf(
-      MusicProviderError,
-    );
+    expect(() => createMusicProvider("napster")).toThrow("MUSIC_PROVIDER desconhecido");
+    expect(() => createMusicProvider("spotify")).toThrow("MUSIC_PROVIDER desconhecido");
   });
 });
 

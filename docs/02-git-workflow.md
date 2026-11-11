@@ -11,7 +11,7 @@
 1. `chore/scaffold` — Next.js, Tailwind, Vitest, Playwright
 2. `feat/design-system` — tokens e componentes base + menu inicial
 3. `feat/game-core` — domínio puro (máquina de estados, pontuação)
-4. `feat/music-provider` — interface + Mock + Deezer (+ esqueleto Spotify)
+4. `feat/music-provider` — interface + Mock + Deezer
 5. `feat/realtime-server` — servidor customizado com WebSocket e salas
 6. `feat/host-ui` — telas H2–H5 da TV
 7. `feat/controller-ui` — telas P1–P4 do celular
