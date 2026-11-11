@@ -7,7 +7,7 @@ import { useI18n } from "@/lib/i18n/provider";
 export function HomeScreen() {
   const { t } = useI18n();
   return (
-    <main className="relative flex min-h-dvh flex-1 flex-col items-center justify-center overflow-hidden bg-[radial-gradient(ellipse_at_50%_40%,#2a0f4a_0%,#0f0f12_65%)] px-6 text-center">
+    <main className="relative flex min-h-dvh flex-1 flex-col overflow-hidden bg-[radial-gradient(ellipse_at_50%_40%,#2a0f4a_0%,#0f0f12_65%)] text-center">
       <Equalizer
         bars={48}
         seed={3}
@@ -15,10 +15,13 @@ export function HomeScreen() {
         barClassName="rounded-t bg-gradient-to-b from-pink to-purple"
       />
 
-      <DeezerLogo height={36} className="absolute left-6 top-6" />
-      <LanguageSwitcher className="absolute right-6 top-6" />
+      {/* Barra no fluxo da página (não sobreposta): em janelas baixas o título nunca cobre o logo do Deezer. */}
+      <header className="relative z-10 flex items-start justify-between px-6 pt-6">
+        <DeezerLogo height={36} />
+        <LanguageSwitcher />
+      </header>
 
-      <div className="relative flex flex-col items-center gap-2">
+      <div className="relative flex flex-1 flex-col items-center justify-center gap-2 px-6 pb-10 pt-4">
         <h1 className="text-brand animate-pulse-beat text-6xl font-black leading-none tracking-tight drop-shadow-[0_0_28px_#ff008066] sm:text-8xl">
           BEATRUSH
         </h1>
