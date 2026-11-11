@@ -8,6 +8,7 @@ export default defineConfig({
     command: "npm run dev",
     url: "http://localhost:3100",
     env: {
+      NEXT_DIST_DIR: ".next-e2e",
       PORT: "3100",
       MUSIC_PROVIDER: "mock",
       VOTE_MS: "15000",

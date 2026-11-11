@@ -86,3 +86,12 @@ npm run test:e2e     # Playwright (sobe o servidor sozinho na porta 3100)
 
 Variáveis: `PORT`, `MUSIC_PROVIDER` (`deezer|spotify|mock`), `VOTE_MS`, `ROUND_MS`, `REVEAL_MS`,
 `TOTAL_ROUNDS`. Para jogar com celulares reais, use o IP da máquina na rede local.
+
+## Acesso pela rede local em desenvolvimento
+
+Para jogar com celulares reais em `npm run dev`, abra a TV e os celulares usando o IP da máquina
+(ex.: `http://192.168.0.10:3000`). O Next bloqueia por padrão os scripts de dev servidos a hosts
+que não sejam `localhost`, e a página renderiza mas **não hidrata** (inputs e botões ficam
+inertes). Por isso `next.config.ts` define `allowedDevOrigins` com as faixas de IP privado
+(`192.168.*.*`, `10.*.*.*`, `172.*.*.*`) e `127.0.0.1`. O e2e `lan-access.spec.ts` cobre essa regressão.
+O Playwright usa `NEXT_DIST_DIR=.next-e2e` para não colidir com um `npm run dev` já aberto.
