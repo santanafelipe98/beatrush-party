@@ -34,6 +34,8 @@ recebem URLs de áudio.
 `selectRoundTracks` busca um pool por gênero vencedor, remove duplicatas (título+artista), alterna
 entre gêneros e escolhe 3 distratores por faixa. `buildRound` (domínio) embaralha as 4 opções.
 
+> Melhorias planejadas para o adaptador Deezer: ver [06-future-work.md](06-future-work.md).
+
 ## Ressalvas do Spotify
 
 - `preview_url` foi descontinuado para muitos apps; reprodução provavelmente exigirá o Web Playback
