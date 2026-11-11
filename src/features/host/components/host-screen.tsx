@@ -45,7 +45,8 @@ export function HostScreen() {
       {view && <HostAudio src={view.phase === "playing" ? view.round?.previewUrl : undefined} muted={muted} />}
 
       {/* O logo do Deezer é obrigatório (API) e fica visível em TODAS as telas da TV, sem cobrir conteúdo. */}
-      <footer className={`flex ${FOOTER} items-center justify-between border-t border-line bg-bg px-6`}>
+      {/* sticky: continua visível na base da janela mesmo quando o conteúdo é mais alto que ela */}
+      <footer className={`sticky bottom-0 z-20 flex ${FOOTER} items-center justify-between border-t border-line bg-bg px-6`}>
         <DeezerLogo height={32} />
         <div className="flex gap-2 text-sm font-bold">
           {status !== "open" && (

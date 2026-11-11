@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { cleanup, render, screen } from "@testing-library/react";
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
 import { JoinForm } from "@/features/controller/components/join-form";
@@ -49,11 +49,28 @@ describe("presença do logo nas telas (exigência da API do Deezer)", () => {
 describe("arquivo do logo em public/", () => {
   const file = path.join(process.cwd(), "public", decodeURIComponent(DEEZER_LOGO_SRC));
 
-  it("existe, é um PNG com transparência e tem as dimensões originais do kit (714×200)", () => {
-    const b = readFileSync(file);
-    expect(b.subarray(1, 4).toString()).toBe("PNG");
-    expect(b.readUInt32BE(16)).toBe(714);
-    expect(b.readUInt32BE(20)).toBe(200);
-    expect(b[25]).toBe(6); // RGBA: o logo branco depende do canal alfa
+  const svg = () => readFileSync(file, "utf8");
+
+  it("existe, é um SVG e mantém as dimensões originais do kit (714×200)", () => {
+    expect(file.endsWith(".svg")).toBe(true);
+    const s = svg();
+    expect(s.trimStart().startsWith("<svg")).toBe(true);
+    expect(s).toMatch(/viewBox="0 0 714 200"/);
+    expect(s).toMatch(/width="714"/);
+    expect(s).toMatch(/height="200"/);
+  });
+
+  it("é só desenho branco (sem fundo): depende de fundo escuro", () => {
+    const fills = [...svg().matchAll(/fill="([^"]+)"/g)].map((m) => m[1]).filter((v) => v !== "none");
+    expect(fills.length).toBeGreaterThan(0);
+    expect(new Set(fills)).toEqual(new Set(["white"]));
+  });
+
+  it("é inerte: sem scripts, estilos, imagens embutidas nem referências externas", () => {
+    expect(svg()).not.toMatch(/<script|<style|<image|<foreignObject|\bon\w+=|xlink:href|href=|url\(|@import/i);
+  });
+
+  it("o PNG antigo não está mais no projeto", () => {
+    expect(existsSync(file.replace(/\.svg$/, ".png"))).toBe(false);
   });
 });

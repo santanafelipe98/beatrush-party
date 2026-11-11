@@ -100,3 +100,23 @@ test("logo também em telas pequenas e nos outros idiomas", async ({ browser }) 
     await ctx.close();
   }
 });
+
+// Janelas baixas/estreitas (celular deitado, janela pequena, TV com zoom): o logo não pode ficar
+// escondido sob o título nem fora da tela exigindo rolagem.
+test("logo visível em janelas baixas", async ({ browser }) => {
+  for (const vp of [
+    { width: 640, height: 360 },
+    { width: 568, height: 320 },
+    { width: 800, height: 600 },
+  ]) {
+    const ctx = await browser.newContext({ viewport: vp });
+    const page = await ctx.newPage();
+    const at = `${vp.width}x${vp.height}`;
+    await page.goto("/");
+    await expectDeezerLogo(page, `home ${at}`);
+    await page.goto("/host");
+    await expect(page.getByTestId("room-code")).toBeVisible();
+    await expectDeezerLogo(page, `TV ${at}`);
+    await ctx.close();
+  }
+});
