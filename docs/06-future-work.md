@@ -32,8 +32,9 @@ Hoje há **uma instância** Node com estado persistido no Redis (`08-persistence
 - trocar o `restore()` de boot por carregamento sob demanda (`room_not_found` → tenta o Redis).
 Só vale se uma instância deixar de bastar (ela comporta muitas salas pequenas).
 
-## 3. Cache de músicas mais útil
+## 3. Renovar o link de preview ao iniciar cada rodada
 
-O cache de faixas dura 5 min porque os links de preview do Deezer expiram em ~14 min. Se fizer
-falta, dá para guardar só metadados (título/artista/capa) por mais tempo e **renovar o link** de
-preview por faixa (`GET /track/{id}`) quando a partida começar.
+Os links de preview do Deezer expiram em ~14 min. A fila de músicas sorteadas é persistida com a sala,
+então após restaurar uma sala muito depois os links podem ter vencido. Solução: guardar só o id da faixa
+na fila e buscar o link atual (`GET /track/{id}`) no início de cada rodada. Decidimos **não** ter cache
+de faixas por esse mesmo motivo.

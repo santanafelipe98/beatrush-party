@@ -28,12 +28,6 @@ export interface RoomStore {
   loadAll(): Promise<RoomSnapshot[]>;
 }
 
-/** Cache chave→valor com expiração (JSON). */
-export interface TrackCache {
-  get<T>(key: string): Promise<T | null>;
-  set(key: string, value: unknown, ttlSeconds: number): Promise<void>;
-}
-
 /**
  * Subconjunto do cliente Redis que usamos. Permite testar com um falso e
  * não acoplar o resto do código à biblioteca.

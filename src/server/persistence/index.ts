@@ -1,17 +1,15 @@
 import Redis from "ioredis";
-import { MemoryTrackCache, NullRoomStore } from "./memory-stores";
-import { RedisRoomStore, RedisTrackCache } from "./redis-stores";
-import type { RedisLike, RoomStore, TrackCache } from "./types";
+import { NullRoomStore } from "./memory-stores";
+import { RedisRoomStore } from "./redis-stores";
+import type { RedisLike, RoomStore } from "./types";
 
 export * from "./types";
 export * from "./memory-stores";
 export * from "./redis-stores";
-export * from "./cached-provider";
 
 export interface Persistence {
   kind: "redis" | "memory";
   roomStore: RoomStore;
-  trackCache: TrackCache;
   close(): Promise<void>;
 }
 
@@ -28,14 +26,14 @@ function throttledLogger(intervalMs = 30_000) {
 
 /**
  * Sem `REDIS_URL`: tudo em memória (salas não sobrevivem a reinício), como antes.
- * Com `REDIS_URL`: salas e cache no Redis. Se o Redis estiver configurado mas inacessível na
+ * Com `REDIS_URL`: salas no Redis. Se o Redis estiver configurado mas inacessível na
  * subida, falha na hora (melhor que rodar achando que persiste). Depois de no ar, uma queda
  * do Redis só degrada: o jogo segue em memória e as gravações voltam quando ele retornar.
  */
 export async function createPersistence(env: Record<string, string | undefined> = process.env): Promise<Persistence> {
   const url = env.REDIS_URL;
   if (!url) {
-    return { kind: "memory", roomStore: new NullRoomStore(), trackCache: new MemoryTrackCache(), close: async () => {} };
+    return { kind: "memory", roomStore: new NullRoomStore(), close: async () => {} };
   }
 
   const warn = throttledLogger();
@@ -63,7 +61,6 @@ export async function createPersistence(env: Record<string, string | undefined> 
   return {
     kind: "redis",
     roomStore: new RedisRoomStore(client, { prefix, roomTtlSeconds, log: warn }),
-    trackCache: new RedisTrackCache(client, { prefix }),
     close: async () => {
       await redis.quit().catch(() => redis.disconnect());
     },

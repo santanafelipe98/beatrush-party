@@ -36,7 +36,7 @@ src/
     host/components/           telas da TV
     controller/components/     telas do celular
   server/                      RoomManager (orquestração/timers) + transporte ws
-    persistence/               RoomStore/TrackCache: memória e Redis (ioredis)
+    persistence/               RoomStore: memória e Redis (ioredis)
   lib/                         utilidades (cn, uuid) e i18n/ (pt-BR, en, es — ver 07-i18n.md)
 e2e/                           testes Playwright
 docs/                          decisões e arquitetura

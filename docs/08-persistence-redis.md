@@ -1,8 +1,8 @@
-# Persistência de salas e cache (Redis)
+# Persistência de salas (Redis)
 
 ## Decisão
 
-Salas e cache de músicas podem ficar no **Redis**, para que uma partida **sobreviva a reinícios** do
+As salas podem ficar no **Redis**, para que uma partida **sobreviva a reinícios** do
 servidor (deploy, crash, `npm run dev` reiniciando). O Redis é **opcional**: sem `REDIS_URL` o app
 funciona exatamente como antes, em memória.
 
@@ -16,7 +16,6 @@ Escopo escolhido: **uma instância Node** com estado persistido. Rodar várias i
 | Estado da sala (`Room`: jogadores, votos, rodada, respostas, placar) | Redis `beatrush:room:<CÓDIGO>` | JSON; TTL renovado a cada gravação (padrão 6 h) |
 | Fila de músicas das próximas rodadas | no mesmo snapshot | já sorteadas, para a partida continuar igual |
 | **Prazo armado** (`deadline`: `endVote`/`nextRound`/`endRound`/`afterReveal` + horário) | no mesmo snapshot | permite rearmar o timer pelo tempo que faltava |
-| Cache de faixas do Deezer | Redis `beatrush:cache:tracks:...` | TTL de **5 min** |
 | Conexões WebSocket | memória do processo | não dá para persistir |
 | Timers | memória do processo | são **rearmados** a partir do `deadline` |
 
@@ -51,15 +50,16 @@ O TTL do Redis (`ROOM_TTL_SECONDS`) é a segunda rede de segurança.
 | --- | --- |
 | `REDIS_URL` definido e Redis fora do ar **na subida** | o servidor **não sobe**, com mensagem clara (melhor que rodar achando que persiste) |
 | Redis cai **com o jogo no ar** | o jogo continua em memória; avisa no log (máx. 1×/30 s). Gravações voltam quando ele retornar |
-| Leitura/gravação do cache falha | ignorada: vai direto ao Deezer |
 
-## Cache de músicas e links de preview
+## Links de preview e por que não há cache de faixas
 
-Os links de `preview` do Deezer são **assinados e expiram em ~14 min**. Por isso o cache de faixas dura
-só **5 min** (`TRACK_CACHE_TTL_SECONDS`): nunca serve um link vencido. O ganho é modesto (menos chamadas
-quando várias salas começam juntas). Pelo mesmo motivo, ao restaurar uma sala muitos minutos depois,
-as músicas **já sorteadas** na fila podem ter link vencido (a rodada toca sem áudio até a próxima
-partida). Para partidas curtas (~4 min) isso não ocorre.
+Os links de `preview` do Deezer são **assinados e expiram em ~14 min**. Um cache de faixas só ajudaria
+quando várias salas começassem juntas e guardaria justamente links que vencem, então **não existe cache
+de faixas**: cada partida busca o catálogo na hora (links frescos).
+
+A fila de músicas **já sorteadas** é persistida junto com a sala; ao restaurar uma sala muitos minutos
+depois, os links dessa fila podem ter vencido (a rodada toca sem áudio). Para partidas curtas (~4 min) isso
+não ocorre. Uma melhoria possível é renovar o link da faixa no início de cada rodada (ver `06-future-work.md`).
 
 ## Como rodar
 
@@ -75,7 +75,7 @@ Veja `.env.example`. O `server.ts` carrega `.env`/`.env.local` antes de ler `RED
 
 ## Testes
 
-- `persistence.test.ts`: contrato de `RoomStore`/`TrackCache` (memória e Redis com cliente falso), cache, fábrica.
+- `persistence.test.ts`: contrato de `RoomStore` (memória e Redis com cliente falso) e fábrica.
 - `room-manager-restart.test.ts`: reinício em **cada fase** (lobby, votação, rodada, revelação, fim,
   carregando músicas), salas abandonadas e falhas do store. Foi validado por mutação (quebrar o rearme
   de timers, a marcação de offline ou a gravação faz testes falharem).

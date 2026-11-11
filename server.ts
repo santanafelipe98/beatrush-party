@@ -2,7 +2,7 @@ import { createServer } from "node:http";
 import { loadEnvConfig } from "@next/env";
 import next from "next";
 import { createMockProvider, createMusicProvider } from "@/features/music";
-import { createPersistence, withTrackCache } from "@/server/persistence";
+import { createPersistence } from "@/server/persistence";
 import { RoomManager } from "@/server/room-manager";
 import { createWsServer } from "@/server/ws-server";
 
@@ -21,12 +21,11 @@ async function main() {
   await app.prepare();
   const upgradeNext = app.getUpgradeHandler();
 
-  const catalog = createMusicProvider();
-  // o catálogo de teste (mock) é instantâneo e não precisa de cache
-  const music = catalog.id === "mock" ? catalog : withTrackCache(catalog, persistence.trackCache);
+  // Sem cache de faixas: os links de preview do Deezer são assinados e expiram em ~14 min.
+  const music = createMusicProvider();
   const manager = new RoomManager({
     music,
-    fallbackMusic: catalog.id === "mock" ? undefined : createMockProvider(),
+    fallbackMusic: music.id === "mock" ? undefined : createMockProvider(),
     store: persistence.roomStore,
     voteMs: num(process.env.VOTE_MS),
     roundMs: num(process.env.ROUND_MS),
@@ -45,7 +44,7 @@ async function main() {
 
   server.listen(port, () => {
     console.log(
-      `> BeatRush Party em http://localhost:${port} (música: ${catalog.id}, persistência: ${persistence.kind}` +
+      `> BeatRush Party em http://localhost:${port} (música: ${music.id}, persistência: ${persistence.kind}` +
         `${restored ? `, ${restored} sala(s) restaurada(s)` : ""})`,
     );
   });
