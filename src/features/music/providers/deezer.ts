@@ -1,17 +1,6 @@
-import type { Genre, Track } from "@/features/game";
+import type { Track } from "@/features/game";
 import { MusicProviderError, type MusicProvider } from "../provider";
-
-/** Consulta de busca por gênero (a API pública do Deezer não exige chave). */
-export const DEEZER_QUERIES: Record<Genre, string> = {
-  Pop: 'genre:"pop"',
-  Rock: 'genre:"rock"',
-  "Hip-Hop": 'genre:"rap/hip hop"',
-  "Anos 80": "anos 80 hits 1980s",
-  Sertanejo: "sertanejo",
-  Funk: "funk brasil",
-  MPB: "mpb",
-  Eletrônica: 'genre:"electro"',
-};
+import { DEEZER_SOURCES, sourcePath } from "./deezer-catalog";
 
 interface DeezerTrack {
   id: number;
@@ -29,7 +18,7 @@ export function createDeezerProvider(
     id: "deezer",
     async getTracksByGenre(genre, limit) {
       // pedimos mais do que o necessário porque nem toda faixa tem preview
-      const url = `${baseUrl}/search?q=${encodeURIComponent(DEEZER_QUERIES[genre])}&limit=${limit * 3}`;
+      const url = `${baseUrl}${sourcePath(DEEZER_SOURCES[genre])}?limit=${limit * 3}`;
       const res = await fetchImpl(url);
       if (!res.ok) throw new MusicProviderError(`HTTP ${res.status}`, "deezer");
       const body = (await res.json()) as { data?: DeezerTrack[]; error?: unknown };
