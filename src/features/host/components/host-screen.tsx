@@ -28,15 +28,17 @@ export function HostScreen() {
 
   return (
     <main className="relative">
+      <div key={view.phase} className="animate-fade-up">
       {view.phase === "lobby" && <LobbyScreen view={view} joinUrl={joinUrl} />}
       {view.phase === "genre-vote" && <GenreVoteScreen view={view} />}
       {view.phase === "playing" && <PlayingScreen view={view} />}
       {view.phase === "reveal" && <RevealScreen view={view} />}
       {view.phase === "finished" && <FinalScreen view={view} />}
+      </div>
 
       <HostAudio src={view.phase === "playing" ? view.round?.previewUrl : undefined} muted={muted} />
 
-      <div className="fixed right-4 top-4 flex gap-2 text-sm font-bold">
+      <div className="fixed bottom-4 right-4 z-20 flex gap-2 text-sm font-bold">
         {status !== "open" && (
           <span className="rounded-full border border-amber bg-amber/15 px-4 py-2 text-amber">Reconectando…</span>
         )}

@@ -49,7 +49,7 @@ function Session({ join, onRejected }: { join: JoinData; onRejected(message: str
   }
 
   return (
-    <main>
+    <main key={view.phase} className="animate-fade-up">
       {status !== "open" && (
         <div role="status" className="fixed inset-x-0 top-0 z-10 bg-amber py-1.5 text-center text-xs font-extrabold text-bg">
           Reconectando… seu estado está salvo

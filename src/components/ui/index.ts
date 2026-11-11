@@ -5,3 +5,5 @@ export * from "./equalizer";
 export * from "./progress-bar";
 export * from "./shape-icon";
 export * from "./timer-pill";
+export * from "./confetti";
+export * from "./countdown-ring";

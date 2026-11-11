@@ -1,5 +1,5 @@
 import type { RoomView } from "@/features/realtime/protocol";
-import { Avatar } from "@/components/ui";
+import { Avatar, Confetti } from "@/components/ui";
 
 const PODIUM = [
   { place: 2, h: 130, bg: "linear-gradient(#e4e6f0,#9a9cb0)", glow: "#ffffff33" },
@@ -13,8 +13,9 @@ export function FinalScreen({ view }: { view: RoomView }) {
   const sorted = [...view.players].sort((a, b) => b.score - a.score || b.bestStreak - a.bestStreak);
 
   return (
-    <div className="grid min-h-dvh grid-cols-1 gap-8 bg-[radial-gradient(ellipse_at_50%_0%,#3d1070,#0f0f12_65%)] p-8 lg:grid-cols-2">
-      <section className="flex flex-col">
+    <div className="relative grid min-h-dvh grid-cols-1 gap-8 overflow-hidden bg-[radial-gradient(ellipse_at_50%_0%,#3d1070,#0f0f12_65%)] p-8 lg:grid-cols-2">
+      <Confetti />
+      <section className="relative flex flex-col">
         <h1 className="text-3xl font-black">Fim de jogo!</h1>
         <div className="flex flex-1 items-end justify-center gap-2.5">
           {PODIUM.map(({ place, h, bg, glow }) => {
@@ -25,8 +26,8 @@ export function FinalScreen({ view }: { view: RoomView }) {
                 <Avatar name={p.name} avatar={p.avatar} size={58} glow />
                 <p className="my-1.5 text-base font-extrabold">{p.name}</p>
                 <div
-                  className="flex w-full flex-col items-center rounded-t-xl pt-2.5 text-bg"
-                  style={{ height: h, background: bg, boxShadow: `0 0 30px ${glow}` }}
+                  className="animate-rise flex w-full origin-bottom flex-col items-center rounded-t-xl pt-2.5 text-bg"
+                  style={{ height: h, background: bg, boxShadow: `0 0 30px ${glow}`, animationDelay: `${place === 1 ? 0.9 : place === 2 ? 0.5 : 0.1}s` }}
                 >
                   <span className="text-4xl font-black leading-none">{place}</span>
                   <span className="text-xs font-extrabold">{fmt(p.score)} pts</span>
@@ -37,7 +38,7 @@ export function FinalScreen({ view }: { view: RoomView }) {
         </div>
       </section>
 
-      <section className="flex flex-col pt-1.5">
+      <section className="relative flex flex-col pt-1.5">
         <div className="grid grid-cols-[30px_1fr_80px_60px] px-3.5 pb-2 text-xs font-extrabold tracking-[0.12em] text-muted">
           <span>#</span>
           <span>JOGADOR</span>
