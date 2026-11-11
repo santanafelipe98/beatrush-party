@@ -46,3 +46,6 @@ next-env.d.ts
 .next-e2e/
 
 !.env.example
+
+# Brand Assets do Deezer: NÃO redistribuir (termos do Brand Hub). Cada operador usa a sua cópia autorizada.
+/public/brand/

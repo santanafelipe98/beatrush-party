@@ -54,8 +54,8 @@ As [diretrizes do Deezer](https://developers.deezer.com/guidelines/logo) exigem 
 
 **Implementação**
 
-- Arquivo oficial do kit de marca em `public/brand/deezer/Signatures-PoweredBy-DE.svg`: a assinatura **"Powered by Deezer"** (vetorial, 2500×367, **branca sobre transparente**).
-  Não foi alterado, recolorido nem recodificado (`<Image unoptimized>`). É inerte (só `<path>`), o que o teste garante.
+- O arquivo do logo (`public/brand/deezer/Signatures-PoweredBy-DE.svg`, assinatura **"Powered by Deezer"**, vetorial, 2500×367, branca sobre transparente) **não faz parte do repositório**: ver "Por que o arquivo não é versionado" abaixo.
+- Quando existe, é servido sem alteração, recolorização ou recodificação (`<Image unoptimized>`) e é inerte (só `<path>`).
 - Componente `DeezerLogo` (`src/components/ui/deezer-logo.tsx`): só escala proporcionalmente; sem efeitos, animação ou link.
   O texto alternativo é o da própria imagem, "Powered by Deezer", igual nos três idiomas.
 - Onde aparece:
@@ -66,21 +66,34 @@ As [diretrizes do Deezer](https://developers.deezer.com/guidelines/logo) exigem 
 - O arquivo não tem margem própria: o layout deixa espaço livre ≥ metade da altura do logo ao redor (rodapé da TV: 4,5 rem com logo de 36 px = 18 px acima e abaixo).
 - A assinatura é bem mais comprida (≈6,8:1) que o logo horizontal usado antes; as alturas foram aumentadas para o texto "Powered by" continuar legível.
 
-**Testes** (`deezer-logo.test.tsx` e `e2e/branding.spec.ts`): o arquivo existe e mantém as dimensões do kit;
-o logo carrega (não é imagem quebrada), tem ≥ 28 px, mantém a proporção, está dentro da tela, com opacidade 1
+**Testes** (`deezer-logo.test.tsx` e `e2e/branding.spec.ts`): se há cópia local, o arquivo mantém as dimensões do kit e é inerte; o logo (ou o texto de plano B) carrega (não é imagem quebrada), tem ≥ 28 px, mantém a proporção, está dentro da tela, com opacidade 1
 e **nada o cobre** (amostra uma grade de pontos sobre toda a área), em cada fase da TV, nas páginas de entrada,
 em telas de 360 px e 1920 px, em **janelas baixas** (640×360, 568×320, 800×600) e nos três idiomas.
 
 **Em dev**, o botão "N" do Next ficava exatamente sobre o logo (canto inferior esquerdo); por isso
 `devIndicators: false` em `next.config.ts` (só esconde o botão; overlays de erro continuam).
 
-**O que NÃO foi verificado** (o site `deezerbrand.com` é renderizado por JavaScript e não pôde ser lido
-automaticamente): tamanho mínimo exigido, medida oficial do espaço livre, versões de cor permitidas e outras
+**O que NÃO foi verificado** (as diretrizes visuais de `deezerbrand.com` exigem navegador e não foram lidas; os Termos de Uso do Brand Hub foram): tamanho mínimo exigido, medida oficial do espaço livre, versões de cor permitidas e outras
 proibições. Os valores acima são conservadores, mas **conferir as regras em https://deezerbrand.com/** antes de publicar.
 
 **Termos da API** (https://developers.deezer.com/termsofuse): o uso é restrito a fins **não comerciais**, os
 serviços não podem ser associados a marca/logo de terceiros e outros usos precisam de aprovação prévia da Deezer.
 Se o BeatRush Party for público ou monetizado, confirmar a conformidade com a Deezer antes.
+
+### Por que o arquivo não é versionado
+
+Os [Termos de Uso do Brand Hub](https://deezerbrand.com/) estabelecem que:
+- quem não recebeu login do Deezer **não pode baixar, usar nem reproduzir** os Brand Assets;
+- quem recebeu só pode usá-los "to the extent necessary" para cumprir um acordo ou **autorização escrita** do Deezer;
+- é proibido **alterá-los** e **comunicá-los a terceiros** sem autorização escrita.
+
+Publicar o arquivo em um repositório público seria repassá-lo a terceiros. Por isso `public/brand/` está no `.gitignore`
+(testes garantem que nada ali é rastreado) e cada operador usa a sua cópia autorizada. **Sem o arquivo**, `DeezerLogo`
+mostra o texto "Powered by Deezer" (plano B para desenvolvimento e para quem clona o repositório; não substitui o logo
+oficial em uma instância publicada). A pasta `public/brand/` fica fora do git, então ao implantar a cópia precisa ser
+colocada no servidor por outro meio (ex.: etapa de deploy ou volume).
+
+> Dúvidas sobre o uso do kit: deezerbrand@deezer.com. Se quiser incluir o logo no repositório, obtenha antes autorização **escrita** do Deezer.
 
 ## Aviso "Sobre" (direitos e uso não comercial)
 

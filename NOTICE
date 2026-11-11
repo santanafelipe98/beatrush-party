@@ -6,22 +6,30 @@ A licença MIT cobre APENAS o código e a documentação escritos para este proj
 Os itens abaixo são de terceiros e NÃO estão cobertos pela licença MIT.
 
 --------------------------------------------------------------------------------
-1. Logo / assinatura do Deezer
+1. Logo / assinatura do Deezer (NÃO incluído neste repositório)
 --------------------------------------------------------------------------------
-Arquivo: public/brand/deezer/Signatures-PoweredBy-DE.svg
+Caminho esperado: public/brand/deezer/Signatures-PoweredBy-DE.svg
 
-"Deezer" e o logotipo do Deezer são marcas de seus respectivos titulares. O arquivo
-é o ativo oficial do kit de marca do Deezer e é usado aqui porque as diretrizes da
-API do Deezer exigem um logo claramente visível em todo app que a utiliza
-(https://developers.deezer.com/guidelines/logo).
+"Deezer" e o logotipo do Deezer são marcas de seus respectivos titulares. As
+diretrizes da API do Deezer exigem um logo claramente visível em todo app que a
+utiliza (https://developers.deezer.com/guidelines/logo), e o app o exibe a partir
+do caminho acima.
 
-- Não é licenciado sob a MIT; seu uso segue as regras de marca do Deezer
-  (https://deezerbrand.com/).
-- Não deve ser alterado, recolorido nem animado.
-- A presença do arquivo neste repositório não implica afiliação, patrocínio ou
+O ARQUIVO DO LOGO NÃO É DISTRIBUÍDO COM ESTE CÓDIGO. Os Termos de Uso do Brand Hub
+do Deezer (https://deezerbrand.com/) só permitem baixar e usar os Brand Assets a
+quem recebeu acesso do Deezer e, mesmo assim, apenas para cumprir um acordo ou uma
+autorização escrita; proíbem alterá-los e comunicá-los a terceiros sem autorização
+escrita do Deezer. Por isso a pasta public/brand/ está no .gitignore.
+
+- Quem executar ou publicar o app deve obter o logo diretamente do Deezer, dentro
+  das condições dele, e colocá-lo no caminho acima.
+- Sem o arquivo, o app mostra apenas o texto "Powered by Deezer". Isso é só uma
+  alternativa para desenvolvimento e NÃO substitui o logo oficial em uma instância
+  publicada.
+- O logo não deve ser alterado, recolorido nem animado.
+- A ausência ou a presença do logo não implica afiliação, patrocínio ou
   endosso do Deezer ao BeatRush Party.
-- Se você reutilizar este projeto, obtenha o logo diretamente do Deezer e confira
-  as condições de uso e de redistribuição vigentes.
+- Em caso de dúvida sobre o uso: deezerbrand@deezer.com.
 
 --------------------------------------------------------------------------------
 2. Músicas, capas e dados do Deezer

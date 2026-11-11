@@ -12,6 +12,8 @@ npm install
 npm run dev            # http://localhost:3000
 ```
 
+> **Logo do Deezer:** o arquivo do logo **não** vem neste repositório (os termos do Brand Hub do Deezer não permitem redistribuí-lo; ver [NOTICE](NOTICE)). Sem ele o app mostra o texto "Powered by Deezer". Para publicar uma instância, obtenha o logo com o Deezer e coloque em `public/brand/deezer/Signatures-PoweredBy-DE.svg` (a pasta é ignorada pelo git).
+
 1. Abra `http://localhost:3000` na TV/notebook e clique em **Criar Nova Sala**.
 2. No celular, escaneie o QR Code (ou abra `/play` e digite o código).
 3. O primeiro jogador inicia a votação de gêneros e a partida começa.
@@ -26,6 +28,6 @@ Documentação em [docs/](docs/README.md).
 
 O código é distribuído sob a [Licença MIT](LICENSE). Isso cobre **apenas** o código e a documentação deste repositório.
 
-- O **logo do Deezer**, as **músicas, capas e dados** vêm do Deezer e **não** são cobertos pela MIT (ver [NOTICE](NOTICE)).
+- O **logo do Deezer** (que nem está neste repositório), as **músicas, capas e dados** vêm do Deezer e **não** são cobertos pela MIT (ver [NOTICE](NOTICE)).
 - O uso da **API do Deezer** é restrito a **fins não comerciais** pelos [termos deles](https://developers.deezer.com/termsofuse). Essa restrição vale para quem executa o app com a API, não para o código em si. Quem publicar uma instância deve cumpri-la.
 - O BeatRush Party não é afiliado, patrocinado nem endossado pelo Deezer.
