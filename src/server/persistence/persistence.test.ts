@@ -1,18 +1,13 @@
 import { describe, expect, it, vi } from "vitest";
 import { createRoom, type Track } from "@/features/game";
-import type { MusicProvider } from "@/features/music";
 import {
   MemoryRoomStore,
-  MemoryTrackCache,
   RedisRoomStore,
-  RedisTrackCache,
   SNAPSHOT_VERSION,
   createPersistence,
-  withTrackCache,
   type RedisLike,
   type RoomSnapshot,
   type RoomStore,
-  type TrackCache,
 } from "./index";
 
 /** Redis falso em memória: suficiente para exercitar SCAN paginado, MGET, EX e DEL. */
@@ -112,81 +107,6 @@ describe("RedisRoomStore", () => {
   });
 });
 
-describe.each<[string, () => TrackCache]>([
-  ["MemoryTrackCache", () => new MemoryTrackCache()],
-  ["RedisTrackCache (cliente falso)", () => new RedisTrackCache(new FakeRedis())],
-])("contrato de TrackCache: %s", (_name, make) => {
-  it("guarda e devolve JSON; chave ausente é null", async () => {
-    const cache = make();
-    expect(await cache.get("x")).toBeNull();
-    await cache.set("x", { a: [1, 2] }, 60);
-    expect(await cache.get("x")).toEqual({ a: [1, 2] });
-  });
-});
-
-describe("MemoryTrackCache", () => {
-  it("expira pelo relógio", async () => {
-    let now = 0;
-    const cache = new MemoryTrackCache(() => now);
-    await cache.set("k", "v", 10);
-    now = 9_999;
-    expect(await cache.get("k")).toBe("v");
-    now = 10_000;
-    expect(await cache.get("k")).toBeNull();
-  });
-});
-
-describe("withTrackCache", () => {
-  const tracks: Track[] = [{ id: "1", title: "A", artist: "X" }];
-  const provider = (impl: MusicProvider["getTracksByGenre"]): MusicProvider => ({ id: "p", getTracksByGenre: vi.fn(impl) });
-
-  it("consulta o provedor uma vez e serve o resto do cache", async () => {
-    const p = provider(async () => tracks);
-    const cached = withTrackCache(p, new MemoryTrackCache());
-    expect(await cached.getTracksByGenre("Pop", 5)).toEqual(tracks);
-    expect(await cached.getTracksByGenre("Pop", 5)).toEqual(tracks);
-    expect(p.getTracksByGenre).toHaveBeenCalledTimes(1);
-    await cached.getTracksByGenre("Rock", 5); // outro gênero = outra chave
-    await cached.getTracksByGenre("Pop", 9); // outro limite = outra chave
-    expect(p.getTracksByGenre).toHaveBeenCalledTimes(3);
-    expect(cached.id).toBe("p");
-  });
-
-  it("não guarda resultado vazio e usa TTL curto por padrão (links do Deezer expiram)", async () => {
-    const cache = { get: vi.fn(async () => null), set: vi.fn(async () => {}) };
-    await withTrackCache(provider(async () => []), cache).getTracksByGenre("Pop", 5);
-    expect(cache.set).not.toHaveBeenCalled();
-    await withTrackCache(provider(async () => tracks), cache).getTracksByGenre("Pop", 5);
-    const ttl = (cache.set.mock.calls[0] as unknown[])[2] as number;
-    expect(ttl).toBeLessThan(14 * 60);
-  });
-
-  it("falha do cache nunca derruba a busca", async () => {
-    const broken: TrackCache = {
-      get: async () => {
-        throw new Error("get");
-      },
-      set: async () => {
-        throw new Error("set");
-      },
-    };
-    const log = vi.fn();
-    const out = await withTrackCache(provider(async () => tracks), broken, 60, log).getTracksByGenre("Pop", 5);
-    expect(out).toEqual(tracks);
-    expect(log).toHaveBeenCalledTimes(2);
-  });
-
-  it("falha do provedor continua sendo propagada", async () => {
-    const cached = withTrackCache(
-      provider(async () => {
-        throw new Error("deezer fora");
-      }),
-      new MemoryTrackCache(),
-    );
-    await expect(cached.getTracksByGenre("Pop", 5)).rejects.toThrow("deezer fora");
-  });
-});
-
 describe("createPersistence", () => {
   it("sem REDIS_URL usa memória (comportamento anterior)", async () => {
     const p = await createPersistence({});
@@ -203,7 +123,7 @@ describe("createPersistence", () => {
 
 // Integração com um Redis de verdade: roda só quando REDIS_URL está definido (ex.: `docker compose up -d redis`).
 describe.skipIf(!process.env.REDIS_URL)("Redis real", () => {
-  it("salva, restaura e remove salas e cache", async () => {
+  it("salva, restaura e remove salas", async () => {
     const prefix = `beatrush-test-${Date.now()}:`;
     const p = await createPersistence({ REDIS_URL: process.env.REDIS_URL, REDIS_PREFIX: prefix });
     try {
@@ -216,8 +136,6 @@ describe.skipIf(!process.env.REDIS_URL)("Redis real", () => {
       await p.roomStore.remove("REL2");
       expect(await p.roomStore.loadAll()).toEqual([]);
 
-      await p.trackCache.set("k", { ok: true }, 5);
-      expect(await p.trackCache.get("k")).toEqual({ ok: true });
     } finally {
       await p.close();
     }

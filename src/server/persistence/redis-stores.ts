@@ -1,4 +1,4 @@
-import { SNAPSHOT_VERSION, type RedisLike, type RoomSnapshot, type RoomStore, type TrackCache } from "./types";
+import { SNAPSHOT_VERSION, type RedisLike, type RoomSnapshot, type RoomStore } from "./types";
 
 export interface RedisStoreOptions {
   /** Prefixo das chaves (permite compartilhar um Redis com outros apps/ambientes). */
@@ -63,24 +63,5 @@ export class RedisRoomStore implements RoomStore {
       });
     }
     return out;
-  }
-}
-
-export class RedisTrackCache implements TrackCache {
-  private prefix: string;
-  constructor(
-    private redis: RedisLike,
-    options: Pick<RedisStoreOptions, "prefix"> = {},
-  ) {
-    this.prefix = options.prefix ?? "beatrush:";
-  }
-
-  async get<T>(key: string): Promise<T | null> {
-    const raw = await this.redis.get(`${this.prefix}cache:${key}`);
-    return raw ? (JSON.parse(raw) as T) : null;
-  }
-
-  async set(key: string, value: unknown, ttlSeconds: number) {
-    await this.redis.set(`${this.prefix}cache:${key}`, JSON.stringify(value), "EX", ttlSeconds);
   }
 }
