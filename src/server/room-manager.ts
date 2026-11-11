@@ -19,6 +19,7 @@ import {
   voteGenres,
   voteReplay,
   type Room,
+  type Track,
 } from "@/features/game";
 import type { MusicProvider, RoundTracks } from "@/features/music";
 import { selectRoundTracks } from "@/features/music";
@@ -60,6 +61,8 @@ export interface ManagerOptions {
   introMs?: number;
   /** Tempo sem nenhuma conexão até a sala ser removida da memória e do store. */
   idleMs?: number;
+  /** Tempo máximo para renovar o link de áudio no início de uma rodada (depois, usa o link já conhecido). */
+  previewRefreshMs?: number;
 }
 
 interface Runtime {
@@ -81,11 +84,18 @@ type Resolved = Required<Omit<ManagerOptions, "fallbackMusic">> & Pick<ManagerOp
 
 const CODE_ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ";
 
+function withoutPreview(track: Track): Track {
+  const copy = { ...track };
+  delete copy.previewUrl;
+  return copy;
+}
+
 export class RoomManager {
   private rooms = new Map<string, Runtime>();
   private bindings = new Map<Connection, { code: string; playerId?: string }>();
   private opts: Resolved;
   private lastStoreWarning = 0;
+  private lastPreviewWarning = 0;
 
   constructor(options: ManagerOptions) {
     const defaults: Omit<Resolved, "music" | "fallbackMusic"> = {
@@ -99,6 +109,7 @@ export class RoomManager {
       totalRounds: 12,
       introMs: 1_500,
       idleMs: 30 * 60_000,
+      previewRefreshMs: 2_500,
     };
     // valores `undefined` (ex.: env não definida) não sobrescrevem os padrões
     const given = Object.fromEntries(Object.entries(options).filter(([, v]) => v !== undefined));
@@ -319,20 +330,71 @@ export class RoomManager {
     }
   }
 
-  private nextRound(rt: Runtime) {
-    const next = rt.queue.shift();
-    if (!next) return;
-    const round = buildRound(
-      rt.room.roundsPlayed,
-      next.track,
-      next.distractors,
-      this.opts.now(),
-      this.opts.roundMs,
-      this.opts.rng,
-    );
-    rt.room = startRound(rt.room, round);
-    this.arm(rt, "endRound", this.opts.roundMs);
-    this.commit(rt);
+  /**
+   * Inicia a próxima rodada. Antes, renova o link de áudio da faixa (os links do Deezer expiram em
+   * ~14 min, e a fila pode ter sido sorteada há tempo ou restaurada após um reinício). A faixa só sai
+   * da fila DEPOIS disso: se o servidor cair no meio, a restauração tenta a mesma faixa de novo.
+   * `startedAt` é marcado após a renovação, para ninguém perder tempo de resposta com a busca.
+   */
+  private async nextRound(rt: Runtime) {
+    const next = rt.queue[0];
+    if (!next || rt.busy) return;
+    rt.busy = true;
+    try {
+      const track = await this.freshTrack(next.track);
+      if (this.rooms.get(rt.room.code) !== rt || rt.queue[0] !== next) return; // sala removida / fila mudou
+      rt.queue.shift();
+      const round = buildRound(
+        rt.room.roundsPlayed,
+        track,
+        next.distractors,
+        this.opts.now(),
+        this.opts.roundMs,
+        this.opts.rng,
+      );
+      rt.room = startRound(rt.room, round);
+      this.arm(rt, "endRound", this.opts.roundMs);
+      this.commit(rt);
+    } catch (e) {
+      console.error(`[game] não foi possível iniciar a rodada na sala ${rt.room.code}:`, e);
+    } finally {
+      rt.busy = false;
+    }
+  }
+
+  /** Link de áudio atualizado da faixa; em qualquer falha ou demora, segue com o que já se tem. */
+  private async freshTrack(track: Track): Promise<Track> {
+    const provider = this.opts.music;
+    if (!provider.getTrack) return track;
+    try {
+      const fresh = await this.withTimeout(provider.getTrack(track.id), this.opts.previewRefreshMs);
+      if (fresh?.previewUrl) {
+        return { ...track, previewUrl: fresh.previewUrl, coverUrl: fresh.coverUrl ?? track.coverUrl };
+      }
+    } catch (e) {
+      const now = Date.now();
+      if (now - this.lastPreviewWarning > 30_000) {
+        this.lastPreviewWarning = now;
+        console.warn(`[music] não renovou o link de ${track.id}; usando o anterior:`, e instanceof Error ? e.message : e);
+      }
+    }
+    return track;
+  }
+
+  private withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
+    return new Promise<T>((resolve, reject) => {
+      const handle = this.opts.timers.setTimeout(() => reject(new Error(`timeout de ${ms}ms`)), ms);
+      promise.then(
+        (v) => {
+          this.opts.timers.clearTimeout(handle);
+          resolve(v);
+        },
+        (e) => {
+          this.opts.timers.clearTimeout(handle);
+          reject(e);
+        },
+      );
+    });
   }
 
   private endRound(rt: Runtime) {
@@ -349,7 +411,8 @@ export class RoomManager {
       rt.room = finishGame(rt.room);
       this.commit(rt);
     } else {
-      this.nextRound(rt);
+      rt.deadline = { action: "nextRound", at: this.opts.now() };
+      void this.nextRound(rt);
     }
   }
 
@@ -372,13 +435,16 @@ export class RoomManager {
 
   private fire(rt: Runtime, action: DeadlineAction) {
     rt.timer = null;
-    rt.deadline = null;
+    // `nextRound` é assíncrono (renova o link de áudio): o prazo continua registrado até a rodada
+    // começar (aí `arm` o substitui). Assim, um snapshot gravado nesse intervalo, ou uma falha, faz a
+    // restauração tentar iniciar a rodada de novo em vez de adivinhar pela fase.
+    if (action !== "nextRound") rt.deadline = null;
     try {
       switch (action) {
         case "endVote":
           return void this.endVote(rt);
         case "nextRound":
-          return this.nextRound(rt);
+          return void this.nextRound(rt);
         case "endRound":
           return this.endRound(rt);
         case "afterReveal":
@@ -404,7 +470,8 @@ export class RoomManager {
     if (deadline) return this.arm(rt, deadline.action, Math.max(0, deadline.at - now));
 
     // sem prazo salvo: deduz pela fase (ex.: parou enquanto as músicas carregavam)
-    if (phase === "genre-vote" && voteEndsAt === null && !rt.busy) void this.loadQueueAndStart(rt);
+    if (phase === "genre-vote" && voteEndsAt === null && rt.queue.length > 0) this.arm(rt, "nextRound", this.opts.introMs);
+    else if (phase === "genre-vote" && voteEndsAt === null && !rt.busy) void this.loadQueueAndStart(rt);
     else if (phase === "genre-vote" && voteEndsAt !== null) this.arm(rt, "endVote", Math.max(0, voteEndsAt - now));
     else if (phase === "playing" && round) this.arm(rt, "endRound", Math.max(0, round.startedAt + round.durationMs - now));
     else if (phase === "reveal") this.arm(rt, "afterReveal", this.opts.revealMs);
@@ -435,7 +502,8 @@ export class RoomManager {
     const snapshot: RoomSnapshot = {
       v: SNAPSHOT_VERSION,
       room: rt.room,
-      queue: [...rt.queue],
+      // sem links de áudio: eles expiram e são renovados no início de cada rodada
+      queue: rt.queue.map((q) => ({ track: withoutPreview(q.track), distractors: q.distractors.map(withoutPreview) })),
       deadline: rt.deadline,
       savedAt: this.opts.now(),
     };

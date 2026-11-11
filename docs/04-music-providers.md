@@ -9,6 +9,8 @@ A plataforma de música é o Deezer, mas o jogo depende apenas da porta
 interface MusicProvider {
   id: string;
   getTracksByGenre(genre: Genre, limit: number): Promise<Track[]>;
+  /** Opcional: busca uma faixa pelo id para obter um previewUrl atual. */
+  getTrack?(id: string): Promise<Track | null>;
 }
 ```
 
@@ -32,6 +34,18 @@ recebem URLs de áudio.
 
 `selectRoundTracks` busca um pool por gênero vencedor, remove duplicatas (título+artista), alterna
 entre gêneros e escolhe 3 distratores por faixa. `buildRound` (domínio) embaralha as 4 opções.
+
+## Link de áudio renovado a cada rodada
+
+Os links de `preview` do Deezer são **assinados e expiram em ~14 min**. Para nunca tocar um link vencido
+(partida longa, fila sorteada há tempo ou sala restaurada após um reinício), o `RoomManager` chama
+`getTrack(id)` **no início de cada rodada** e usa o link devolvido (`GET /track/{id}`, sem chave).
+
+- Só o `previewUrl` e a capa são trocados; título, artista e opções continuam os do sorteio.
+- Se a busca falhar, demorar mais que `previewRefreshMs` (2,5 s) ou não trouxer link, a rodada usa o link que já tinha. O jogo nunca trava por isso.
+- `startedAt` da rodada só é marcado **depois** da renovação: ninguém perde tempo de resposta com a busca.
+- O Deezer responde `200` com `{ "error": … }` para faixa removida; vira `null`. Ids que não começam com `deezer-` (ex.: faixas do mock usado como fallback) viram `null` sem chamar a API.
+- Provedores sem `getTrack` (mock) simplesmente não renovam.
 
 ## Catálogo de gêneros (Deezer)
 

@@ -10,6 +10,18 @@ interface DeezerTrack {
   album?: { cover_medium?: string };
 }
 
+const ID_PREFIX = "deezer-";
+
+function toTrack(t: DeezerTrack): Track {
+  return {
+    id: `${ID_PREFIX}${t.id}`,
+    title: t.title,
+    artist: t.artist.name,
+    previewUrl: t.preview,
+    coverUrl: t.album?.cover_medium,
+  };
+}
+
 export function createDeezerProvider(
   fetchImpl: typeof fetch = fetch,
   baseUrl = "https://api.deezer.com",
@@ -27,13 +39,19 @@ export function createDeezerProvider(
       return body.data
         .filter((t) => !!t.preview)
         .slice(0, limit)
-        .map<Track>((t) => ({
-          id: `deezer-${t.id}`,
-          title: t.title,
-          artist: t.artist.name,
-          previewUrl: t.preview,
-          coverUrl: t.album?.cover_medium,
-        }));
+        .map(toTrack);
+    },
+
+    async getTrack(id) {
+      if (!id.startsWith(ID_PREFIX)) return null; // faixa de outro catálogo (ex.: mock de fallback)
+      const numeric = id.slice(ID_PREFIX.length);
+      if (!/^\d+$/.test(numeric)) return null;
+      const res = await fetchImpl(`${baseUrl}/track/${numeric}`);
+      if (!res.ok) throw new MusicProviderError(`HTTP ${res.status}`, "deezer");
+      const body = (await res.json()) as Partial<DeezerTrack> & { error?: unknown };
+      // faixa removida: o Deezer responde 200 com { error: ... }
+      if (body.error || !body.id || !body.artist) return null;
+      return toTrack(body as DeezerTrack);
     },
   };
 }

@@ -14,7 +14,7 @@ Escopo escolhido: **uma instância Node** com estado persistido. Rodar várias i
 | Dado | Onde | Observação |
 | --- | --- | --- |
 | Estado da sala (`Room`: jogadores, votos, rodada, respostas, placar) | Redis `beatrush:room:<CÓDIGO>` | JSON; TTL renovado a cada gravação (padrão 6 h) |
-| Fila de músicas das próximas rodadas | no mesmo snapshot | já sorteadas, para a partida continuar igual |
+| Fila de músicas das próximas rodadas | no mesmo snapshot | já sorteadas, para a partida continuar igual; **sem links de áudio** (expiram) |
 | **Prazo armado** (`deadline`: `endVote`/`nextRound`/`endRound`/`afterReveal` + horário) | no mesmo snapshot | permite rearmar o timer pelo tempo que faltava |
 | Conexões WebSocket | memória do processo | não dá para persistir |
 | Timers | memória do processo | são **rearmados** a partir do `deadline` |
@@ -53,13 +53,15 @@ O TTL do Redis (`ROOM_TTL_SECONDS`) é a segunda rede de segurança.
 
 ## Links de preview e por que não há cache de faixas
 
-Os links de `preview` do Deezer são **assinados e expiram em ~14 min**. Um cache de faixas só ajudaria
-quando várias salas começassem juntas e guardaria justamente links que vencem, então **não existe cache
-de faixas**: cada partida busca o catálogo na hora (links frescos).
+Os links de `preview` do Deezer são **assinados e expiram em ~14 min**. Por isso:
 
-A fila de músicas **já sorteadas** é persistida junto com a sala; ao restaurar uma sala muitos minutos
-depois, os links dessa fila podem ter vencido (a rodada toca sem áudio). Para partidas curtas (~4 min) isso
-não ocorre. Uma melhoria possível é renovar o link da faixa no início de cada rodada (ver `06-future-work.md`).
+- **Não existe cache de faixas** (guardaria links que vencem; o ganho era mínimo).
+- A fila persistida **não guarda o link de áudio**, só id, título, artista e capa.
+- O link atual é buscado pelo id **no início de cada rodada** (`getTrack`; ver `04-music-providers.md`).
+  Assim uma sala restaurada muito tempo depois toca normalmente. Se a busca falhar, a rodada usa o
+  link anterior se ainda o tiver em memória; após um reinício não há link anterior e a rodada toca sem áudio.
+- A faixa só sai da fila **depois** de renovada, e o prazo `nextRound` continua registrado durante a
+  renovação: se o servidor cair nesse intervalo, a restauração tenta iniciar a mesma rodada de novo.
 
 ## Como rodar
 
@@ -76,6 +78,7 @@ Veja `.env.example`. O `server.ts` carrega `.env`/`.env.local` antes de ler `RED
 ## Testes
 
 - `persistence.test.ts`: contrato de `RoomStore` (memória e Redis com cliente falso) e fábrica.
+- `room-manager-preview.test.ts`: renovação do link por rodada (sucesso, erro, `null`, demora, `startedAt`), fila sem links no store e queda no meio da renovação.
 - `room-manager-restart.test.ts`: reinício em **cada fase** (lobby, votação, rodada, revelação, fim,
   carregando músicas), salas abandonadas e falhas do store. Foi validado por mutação (quebrar o rearme
   de timers, a marcação de offline ou a gravação faz testes falharem).
