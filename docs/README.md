@@ -7,4 +7,4 @@
 | [03-realtime-protocol.md](03-realtime-protocol.md) | Protocolo WebSocket host/controller |
 | [04-music-providers.md](04-music-providers.md) | Abstração de provedores de música (Deezer) |
 | [05-game-rules.md](05-game-rules.md) | Regras, fases e pontuação |
-| [06-future-work.md](06-future-work.md) | Melhorias adiadas (ex.: precisão de gêneros no Deezer) |
+| [06-future-work.md](06-future-work.md) | Melhorias adiadas (ex.: validação das fontes de gênero) |

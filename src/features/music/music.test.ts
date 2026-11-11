@@ -1,4 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
+import { GENRES } from "@/features/game";
+import { DEEZER_SOURCES, sourcePath } from "./providers/deezer-catalog";
 import {
   MusicProviderError,
   createDeezerProvider,
@@ -23,7 +25,7 @@ describe("Deezer provider", () => {
     const tracks = await createDeezerProvider(fetchMock as never).getTracksByGenre("Pop", 5);
     expect(tracks.map((t) => t.id)).toEqual(["deezer-1", "deezer-3"]);
     expect(tracks[0]).toMatchObject({ title: "A", artist: "X", previewUrl: "http://p/1.mp3", coverUrl: "c1" });
-    expect(String(fetchMock.mock.calls[0][0])).toContain("api.deezer.com/search?q=");
+    expect(String(fetchMock.mock.calls[0][0])).toBe("https://api.deezer.com/chart/132/tracks?limit=15");
   });
   it("lança MusicProviderError em HTTP e payload inválidos", async () => {
     const bad = createDeezerProvider((async () => jsonResponse({}, false, 500)) as never);
@@ -56,5 +58,28 @@ describe("selectRoundTracks", () => {
   it("falha quando o catálogo é pequeno demais", async () => {
     const tiny = { id: "t", getTracksByGenre: async () => [] };
     await expect(selectRoundTracks(tiny, ["Pop"], 3)).rejects.toThrow("catálogo insuficiente");
+  });
+});
+
+describe("catálogo de fontes do Deezer", () => {
+  it("todo gênero do jogo tem uma fonte curada", () => {
+    for (const g of GENRES) expect(DEEZER_SOURCES[g], g).toBeDefined();
+  });
+  it("monta o caminho de chart e de rádio", () => {
+    expect(sourcePath({ type: "chart", id: 132 })).toBe("/chart/132/tracks");
+    expect(sourcePath({ type: "radio", id: 38305 })).toBe("/radio/38305/tracks");
+  });
+  it("Anos 80 usa rádio e as demais usam chart oficial", async () => {
+    const urls: string[] = [];
+    const p = createDeezerProvider((async (u: string) => {
+      urls.push(u);
+      return jsonResponse({ data: [] });
+    }) as never);
+    await p.getTracksByGenre("Anos 80", 4);
+    await p.getTracksByGenre("Funk", 4);
+    expect(urls).toEqual([
+      "https://api.deezer.com/radio/38305/tracks?limit=12",
+      "https://api.deezer.com/chart/472/tracks?limit=12",
+    ]);
   });
 });

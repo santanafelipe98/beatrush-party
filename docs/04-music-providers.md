@@ -17,7 +17,7 @@ Adaptadores em `src/features/music/providers/`:
 | Adaptador | Status | Observações |
 | --- | --- | --- |
 | `mock` | pronto | Catálogo determinístico e offline. Usado em testes e e2e (`MUSIC_PROVIDER=mock`). |
-| `deezer` | pronto | API pública sem chave; busca por gênero, usa `preview` (MP3 de 30s). |
+| `deezer` | pronto | API pública sem chave; faixas por gênero via charts/rádios curados, usa `preview` (MP3 de 30s). |
 
 A seleção é por variável de ambiente `MUSIC_PROVIDER` (`createMusicProvider`). Padrão: `deezer`.
 
@@ -33,7 +33,23 @@ recebem URLs de áudio.
 `selectRoundTracks` busca um pool por gênero vencedor, remove duplicatas (título+artista), alterna
 entre gêneros e escolhe 3 distratores por faixa. `buildRound` (domínio) embaralha as 4 opções.
 
-> Melhorias planejadas para o adaptador Deezer: ver [06-future-work.md](06-future-work.md).
+## Catálogo de gêneros (Deezer)
+
+Cada gênero do jogo aponta para uma fonte fixa em `providers/deezer-catalog.ts`:
+
+| Gênero | Fonte |
+| --- | --- |
+| Pop | chart 132 |
+| Rock | chart 152 |
+| Hip-Hop | chart 116 (Rap/Hip Hop) |
+| Anos 80 | rádio 38305 (não existe gênero oficial) |
+| Sertanejo | chart 80 |
+| Funk | chart 472 (Rap/Funk Brasileiro) |
+| MPB | chart 78 |
+| Eletrônica | chart 106 (Electro) |
+
+Os ids vêm de `GET https://api.deezer.com/genre` (lista oficial). Para trocar uma fonte, edite o mapa.
+Evoluções planejadas: [06-future-work.md](06-future-work.md).
 
 ## Histórico
 
