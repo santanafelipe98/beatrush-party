@@ -1,0 +1,19 @@
+# Redis para desenvolvimento local:  docker compose up -d redis
+# Depois rode o app com:  REDIS_URL=redis://localhost:6379 npm run dev
+services:
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    # AOF: as salas sobrevivem até a um reinício do próprio Redis
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  redis-data:

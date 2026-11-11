@@ -8,8 +8,9 @@ então usamos um **servidor Node customizado** (`server.ts`): um `http.Server` q
 e atende `Upgrade` em `/ws` com a lib `ws`. Outros upgrades (HMR do Next em dev) seguem para o Next.
 
 Consequência: o deploy precisa de um processo Node de longa duração (não serverless/edge). O estado
-das salas fica **em memória** (uma instância). Para escalar horizontalmente seria preciso
-Redis pub/sub + sticky sessions; o `RoomManager` isola essa dependência.
+das salas fica em memória e é **persistido no Redis** (opcional) para sobreviver a reinícios — ver
+`08-persistence-redis.md`. Para escalar horizontalmente (várias instâncias) seria preciso ainda
+pub/sub, "dono" da sala para os timers e sticky sessions.
 
 ## Camadas
 

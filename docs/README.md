@@ -9,3 +9,4 @@
 | [05-game-rules.md](05-game-rules.md) | Regras, fases e pontuação |
 | [06-future-work.md](06-future-work.md) | Melhorias adiadas (ex.: validação das fontes de gênero) |
 | [07-i18n.md](07-i18n.md) | Internacionalização (pt-BR, en, es) |
+| [08-persistence-redis.md](08-persistence-redis.md) | Persistência de salas e cache no Redis |

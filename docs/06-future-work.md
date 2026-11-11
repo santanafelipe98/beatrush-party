@@ -21,3 +21,19 @@ Isso substituiu a busca por texto, que devolvia faixas fora do gênero.
 - **Variação por região.** Os charts mudam conforme o país do servidor; o conjunto de músicas pode
   diferir entre ambientes.
 - **Links de `preview` expiram** (são assinados); continuar buscando as faixas ao montar a partida.
+
+## 2. Multi-instância (escalar horizontalmente)
+
+Hoje há **uma instância** Node com estado persistido no Redis (`08-persistence-redis.md`). Para várias:
+- **pub/sub** (Redis) para espalhar o estado da sala às instâncias que têm conexões dela;
+- **dono da sala** com lock/lease (ex.: `SET NX PX` renovado) para que só uma instância arme os timers,
+  com failover quando o dono cair;
+- roteamento/sticky sessions para as conexões de uma sala;
+- trocar o `restore()` de boot por carregamento sob demanda (`room_not_found` → tenta o Redis).
+Só vale se uma instância deixar de bastar (ela comporta muitas salas pequenas).
+
+## 3. Cache de músicas mais útil
+
+O cache de faixas dura 5 min porque os links de preview do Deezer expiram em ~14 min. Se fizer
+falta, dá para guardar só metadados (título/artista/capa) por mais tempo e **renovar o link** de
+preview por faixa (`GET /track/{id}`) quando a partida começar.
