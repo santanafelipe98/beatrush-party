@@ -6,5 +6,6 @@ export * from "./progress-bar";
 export * from "./shape-icon";
 export * from "./timer-pill";
 export * from "./confetti";
+export * from "./deezer-logo";
 export * from "./countdown-ring";
 export * from "./language-switcher";

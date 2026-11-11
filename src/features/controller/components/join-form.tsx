@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { AVATAR_COLORS, Button, LanguageSwitcher } from "@/components/ui";
+import { AVATAR_COLORS, Button, DeezerLogo, LanguageSwitcher } from "@/components/ui";
 import { useI18n } from "@/lib/i18n/provider";
 import { cn } from "@/lib/cn";
 
@@ -91,6 +91,8 @@ export function JoinForm({ initialCode = "", error, onSubmit }: JoinFormProps) {
       <Button type="submit" disabled={!valid} className="mt-auto">
         {t("join.submit")}
       </Button>
+
+      <DeezerLogo height={28} className="mx-auto mt-2" />
     </form>
   );
 }

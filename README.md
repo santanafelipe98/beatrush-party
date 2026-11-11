@@ -3,7 +3,7 @@
 Quiz musical multiplayer: a TV mostra e toca; os celulares respondem. Quem acerta mais rápido ganha mais pontos.
 
 - **Next.js + Tailwind** · **WebSocket (`ws`)** · **Zustand** · **Zod**
-- Música via `MusicProvider` (Deezer, Mock para testes)
+- Música via `MusicProvider` (Deezer, Mock para testes). O logo do Deezer, exigido pela API, aparece nas telas (ver [docs/04-music-providers.md](docs/04-music-providers.md))
 - **Idiomas:** pt-BR, inglês e espanhol (por aparelho; ver [docs/07-i18n.md](docs/07-i18n.md))
 
 ```bash

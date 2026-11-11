@@ -47,6 +47,40 @@ Os links de `preview` do Deezer são **assinados e expiram em ~14 min**. Para nu
 - O Deezer responde `200` com `{ "error": … }` para faixa removida; vira `null`. Ids que não começam com `deezer-` (ex.: faixas do mock usado como fallback) viram `null` sem chamar a API.
 - Provedores sem `getTrack` (mock) simplesmente não renovam.
 
+## Logo do Deezer (exigência da API)
+
+As [diretrizes do Deezer](https://developers.deezer.com/guidelines/logo) exigem que todo app que usa a API
+"must have to include a clearly visible Deezer Logo" ("Deezer Logo must be clearly visible and identified").
+
+**Implementação**
+
+- Arquivo oficial do kit de marca em `public/brand/deezer/Logo Horizontal.png` (714×200, **branco sobre transparente**).
+  Não foi alterado, recolorido nem recodificado (`<Image unoptimized>`).
+- Componente `DeezerLogo` (`src/components/ui/deezer-logo.tsx`): só escala proporcionalmente; sem efeitos, animação ou link.
+  O texto alternativo é traduzido (pt-BR/en/es).
+- Onde aparece:
+  - **Tela inicial**: canto superior esquerdo (36 px);
+  - **TV**: rodapé fixo em **todas** as telas (lobby, votação, rodada, revelação, ranking), 32 px, à esquerda, com os controles de idioma/som à direita. É um rodapé de 4 rem *reservado no layout*: nunca cobre conteúdo;
+  - **Celular**: formulário de entrada (28 px). As telas de jogo do celular não tocam nem mostram nada do catálogo.
+- Por ser branco, **só pode ser usado sobre fundo escuro** (todo o app é escuro).
+- O arquivo não tem margem própria: o layout deixa espaço livre ≥ metade da altura do logo ao redor.
+
+**Testes** (`deezer-logo.test.tsx` e `e2e/branding.spec.ts`): o arquivo existe e mantém as dimensões do kit;
+o logo carrega (não é imagem quebrada), tem ≥ 28 px, mantém a proporção, está dentro da tela, com opacidade 1
+e **nada o cobre** (amostra uma grade de pontos sobre toda a área), em cada fase da TV, nas páginas de entrada,
+em telas de 360 px e 1920 px e nos três idiomas.
+
+**Em dev**, o botão "N" do Next ficava exatamente sobre o logo (canto inferior esquerdo); por isso
+`devIndicators: false` em `next.config.ts` (só esconde o botão; overlays de erro continuam).
+
+**O que NÃO foi verificado** (o site `deezerbrand.com` é renderizado por JavaScript e não pôde ser lido
+automaticamente): tamanho mínimo exigido, medida oficial do espaço livre, versões de cor permitidas e outras
+proibições. Os valores acima são conservadores, mas **conferir as regras em https://deezerbrand.com/** antes de publicar.
+
+**Termos da API** (https://developers.deezer.com/termsofuse): o uso é restrito a fins **não comerciais**, os
+serviços não podem ser associados a marca/logo de terceiros e outros usos precisam de aprovação prévia da Deezer.
+Se o BeatRush Party for público ou monetizado, confirmar a conformidade com a Deezer antes.
+
 ## Catálogo de gêneros (Deezer)
 
 Cada gênero do jogo aponta para uma fonte fixa em `providers/deezer-catalog.ts`:
