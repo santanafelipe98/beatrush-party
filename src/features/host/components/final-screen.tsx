@@ -16,7 +16,7 @@ export function FinalScreen({ view }: { view: RoomView }) {
   const sorted = [...view.players].sort((a, b) => b.score - a.score || b.bestStreak - a.bestStreak);
 
   return (
-    <div className="relative grid min-h-[calc(100dvh-4rem)] grid-cols-1 gap-8 overflow-hidden bg-[radial-gradient(ellipse_at_50%_0%,#3d1070,#0f0f12_65%)] p-8 lg:grid-cols-2">
+    <div className="relative grid min-h-[calc(100dvh-4.5rem)] grid-cols-1 gap-8 overflow-hidden bg-[radial-gradient(ellipse_at_50%_0%,#3d1070,#0f0f12_65%)] p-8 lg:grid-cols-2">
       <Confetti />
       <section className="relative flex flex-col">
         <h1 className="text-3xl font-black">{t("final.title")}</h1>

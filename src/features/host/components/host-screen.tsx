@@ -12,8 +12,8 @@ import { LobbyScreen } from "./lobby-screen";
 import { PlayingScreen } from "./playing-screen";
 import { RevealScreen } from "./reveal-screen";
 
-/** Altura do rodapé (logo + controles). As telas usam `min-h-[calc(100dvh-4rem)]` para caber junto. */
-const FOOTER = "h-16";
+/** Altura do rodapé (logo + controles). As telas usam `min-h-[calc(100dvh-4.5rem)]` para caber junto. */
+const FOOTER = "h-[4.5rem]";
 
 export function HostScreen() {
   useHostSession();
@@ -28,7 +28,7 @@ export function HostScreen() {
     <main className="relative flex min-h-dvh flex-col">
       <div className="flex-1">
         {!view ? (
-          <div className="flex min-h-[calc(100dvh-4rem)] items-center justify-center text-xl font-bold text-muted">
+          <div className="flex min-h-[calc(100dvh-4.5rem)] items-center justify-center text-xl font-bold text-muted">
             {status === "open" ? t("host.creating") : t("host.connecting")}
           </div>
         ) : (
@@ -47,7 +47,7 @@ export function HostScreen() {
       {/* O logo do Deezer é obrigatório (API) e fica visível em TODAS as telas da TV, sem cobrir conteúdo. */}
       {/* sticky: continua visível na base da janela mesmo quando o conteúdo é mais alto que ela */}
       <footer className={`sticky bottom-0 z-20 flex ${FOOTER} items-center justify-between border-t border-line bg-bg px-6`}>
-        <DeezerLogo height={32} />
+        <DeezerLogo height={36} />
         <div className="flex gap-2 text-sm font-bold">
           {status !== "open" && (
             <span className="rounded-full border border-amber bg-amber/15 px-4 py-2 text-amber">

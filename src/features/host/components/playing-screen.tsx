@@ -14,7 +14,7 @@ export function PlayingScreen({ view }: { view: RoomView }) {
   const pct = Math.min(100, (seconds * 1000 * 100) / round.durationMs);
 
   return (
-    <div className="flex min-h-[calc(100dvh-4rem)] flex-col gap-4 bg-[radial-gradient(ellipse_at_50%_0%,#2a0f4a,#0f0f12_70%)] p-8">
+    <div className="flex min-h-[calc(100dvh-4.5rem)] flex-col gap-4 bg-[radial-gradient(ellipse_at_50%_0%,#2a0f4a,#0f0f12_70%)] p-8">
       <header className="flex items-center justify-between">
         <h1 className="text-2xl font-black">
           {t("round.label", { n: round.index + 1 })}{" "}

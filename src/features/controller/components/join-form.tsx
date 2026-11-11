@@ -34,6 +34,7 @@ export function JoinForm({ initialCode = "", error, onSubmit }: JoinFormProps) {
         if (valid) onSubmit({ code, name: name.trim(), avatar });
       }}
     >
+      <DeezerLogo height={32} className="mx-auto" />
       <LanguageSwitcher className="self-center" />
       <h1 className="text-brand text-center text-3xl font-black">BEATRUSH</h1>
 
@@ -91,8 +92,6 @@ export function JoinForm({ initialCode = "", error, onSubmit }: JoinFormProps) {
       <Button type="submit" disabled={!valid} className="mt-auto">
         {t("join.submit")}
       </Button>
-
-      <DeezerLogo height={28} className="mx-auto mt-2" />
     </form>
   );
 }

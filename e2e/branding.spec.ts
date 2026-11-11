@@ -16,7 +16,7 @@ async function expectDeezerLogo(page: Page, where: string) {
     for (const fx of [0.05, 0.25, 0.5, 0.75, 0.95])
       for (const fy of [0.15, 0.5, 0.85]) points.push([r.left + r.width * fx, r.top + r.height * fy]);
     return {
-      loaded: img.complete && img.naturalWidth === 714 && img.naturalHeight === 200,
+      loaded: img.complete && img.naturalWidth === 2500 && img.naturalHeight === 367,
       width: r.width,
       height: r.height,
       ratio: r.width / r.height,
@@ -27,7 +27,7 @@ async function expectDeezerLogo(page: Page, where: string) {
   });
   expect(info.loaded, `${where}: arquivo do logo não carregou`).toBe(true);
   expect(info.height, `${where}: logo pequeno demais`).toBeGreaterThanOrEqual(28);
-  expect(info.ratio, `${where}: proporção alterada`).toBeCloseTo(714 / 200, 1);
+  expect(info.ratio, `${where}: proporção alterada`).toBeCloseTo(2500 / 367, 1);
   expect(info.inViewport, `${where}: logo fora da tela`).toBe(true);
   expect(info.onTop, `${where}: logo coberto por outro elemento`).toBe(true);
   expect(info.opacity).toBe("1");
@@ -117,6 +117,49 @@ test("logo visível em janelas baixas", async ({ browser }) => {
     await page.goto("/host");
     await expect(page.getByTestId("room-code")).toBeVisible();
     await expectDeezerLogo(page, `TV ${at}`);
+    await ctx.close();
+  }
+});
+
+// A assinatura "Powered by Deezer" é larga (≈6,8:1): em telas estreitas ela não pode empurrar o
+// seletor de idioma para fora da tela nem sobrepô-lo.
+test("em telas estreitas o logo não esconde nem sobrepõe o seletor de idioma", async ({ browser }) => {
+  for (const vp of [
+    { width: 320, height: 568 },
+    { width: 360, height: 640 },
+    { width: 390, height: 780 },
+  ]) {
+    const ctx = await browser.newContext({ viewport: vp });
+    const page = await ctx.newPage();
+    const at = `${vp.width}px`;
+    await page.goto("/");
+    await expectDeezerLogo(page, `home ${at}`);
+
+    const overflow = await page.evaluate(() => document.documentElement.scrollWidth - innerWidth);
+    expect(overflow, `home ${at}: rolagem horizontal`).toBeLessThanOrEqual(0);
+
+    const logoBox = (await page.getByRole("img", { name: /deezer/i }).boundingBox())!;
+    for (const name of ["Português (Brasil)", "English", "Español"]) {
+      const box = await page.getByRole("button", { name }).boundingBox();
+      expect(box, `home ${at}: botão ${name}`).not.toBeNull();
+      expect(box!.x, `home ${at}: ${name} fora da tela (esquerda)`).toBeGreaterThanOrEqual(0);
+      expect(box!.x + box!.width, `home ${at}: ${name} fora da tela (direita)`).toBeLessThanOrEqual(vp.width);
+      const overlaps =
+        box!.x < logoBox.x + logoBox.width &&
+        box!.x + box!.width > logoBox.x &&
+        box!.y < logoBox.y + logoBox.height &&
+        box!.y + box!.height > logoBox.y;
+      expect(overlaps, `home ${at}: ${name} sobreposto ao logo`).toBe(false);
+    }
+
+    // título da home inteiro dentro da tela (não cortado nas bordas)
+    const h1 = (await page.getByRole("heading", { name: "BEATRUSH" }).boundingBox())!;
+    expect(h1.x, `home ${at}: título cortado à esquerda`).toBeGreaterThanOrEqual(0);
+    expect(h1.x + h1.width, `home ${at}: título cortado à direita`).toBeLessThanOrEqual(vp.width);
+
+    // entrada do celular: o logo precisa estar visível sem rolar, mesmo em tela pequena
+    await page.goto("/play");
+    await expectDeezerLogo(page, `entrada do celular ${at}`);
     await ctx.close();
   }
 });

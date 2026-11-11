@@ -54,16 +54,17 @@ As [diretrizes do Deezer](https://developers.deezer.com/guidelines/logo) exigem 
 
 **Implementação**
 
-- Arquivo oficial do kit de marca em `public/brand/deezer/Logo Horizontal.svg` (vetorial, 714×200, **branco sobre transparente**).
+- Arquivo oficial do kit de marca em `public/brand/deezer/Signatures-PoweredBy-DE.svg`: a assinatura **"Powered by Deezer"** (vetorial, 2500×367, **branca sobre transparente**).
   Não foi alterado, recolorido nem recodificado (`<Image unoptimized>`). É inerte (só `<path>`), o que o teste garante.
 - Componente `DeezerLogo` (`src/components/ui/deezer-logo.tsx`): só escala proporcionalmente; sem efeitos, animação ou link.
-  O texto alternativo é traduzido (pt-BR/en/es).
+  O texto alternativo é o da própria imagem, "Powered by Deezer", igual nos três idiomas.
 - Onde aparece:
-  - **Tela inicial**: barra superior **no fluxo da página** (logo à esquerda, idioma à direita), 36 px. Não é um elemento solto sobre o conteúdo: em janelas baixas o título nunca o cobre;
-  - **TV**: rodapé fixo em **todas** as telas (lobby, votação, rodada, revelação, ranking), 32 px, à esquerda, com os controles de idioma/som à direita. É um rodapé de 4 rem *reservado no layout* e `sticky` na base da janela: nunca cobre conteúdo e continua visível mesmo quando a tela é mais alta que a janela;
-  - **Celular**: formulário de entrada (28 px). As telas de jogo do celular não tocam nem mostram nada do catálogo.
+  - **Tela inicial**: barra superior **no fluxo da página** (logo à esquerda, idioma à direita), 40 px de altura. Não é um elemento solto sobre o conteúdo: em janelas baixas o título nunca o cobre;
+  - **TV**: rodapé fixo em **todas** as telas (lobby, votação, rodada, revelação, ranking), 36 px de altura, à esquerda, com os controles de idioma/som à direita. É um rodapé de 4,5 rem *reservado no layout* e `sticky` na base da janela: nunca cobre conteúdo e continua visível mesmo quando a tela é mais alta que a janela;
+  - **Celular**: formulário de entrada, no **topo** (32 px), para ficar visível sem rolar mesmo em telas pequenas (320×568). As telas de jogo do celular não tocam nem mostram nada do catálogo.
 - Por ser branco, **só pode ser usado sobre fundo escuro** (todo o app é escuro).
-- O arquivo não tem margem própria: o layout deixa espaço livre ≥ metade da altura do logo ao redor.
+- O arquivo não tem margem própria: o layout deixa espaço livre ≥ metade da altura do logo ao redor (rodapé da TV: 4,5 rem com logo de 36 px = 18 px acima e abaixo).
+- A assinatura é bem mais comprida (≈6,8:1) que o logo horizontal usado antes; as alturas foram aumentadas para o texto "Powered by" continuar legível.
 
 **Testes** (`deezer-logo.test.tsx` e `e2e/branding.spec.ts`): o arquivo existe e mantém as dimensões do kit;
 o logo carrega (não é imagem quebrada), tem ≥ 28 px, mantém a proporção, está dentro da tela, com opacidade 1

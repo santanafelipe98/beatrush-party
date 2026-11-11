@@ -30,7 +30,7 @@ export function HostAudio({ src, muted }: { src?: string; muted: boolean }) {
         <button
           type="button"
           onClick={() => ref.current?.play().then(() => setBlocked(false))}
-          className="fixed bottom-20 right-4 z-20 rounded-full bg-amber px-5 py-3 text-sm font-extrabold text-bg"
+          className="fixed bottom-24 right-4 z-20 rounded-full bg-amber px-5 py-3 text-sm font-extrabold text-bg"
         >
           {t("host.enableSound")}
         </button>

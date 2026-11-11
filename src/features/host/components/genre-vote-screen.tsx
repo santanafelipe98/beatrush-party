@@ -20,7 +20,7 @@ export function GenreVoteScreen({ view }: { view: RoomView }) {
   const maxVotes = Math.max(1, ...tally.map((r) => r.votes));
 
   return (
-    <div className="flex min-h-[calc(100dvh-4rem)] flex-col gap-4 bg-bg p-8">
+    <div className="flex min-h-[calc(100dvh-4.5rem)] flex-col gap-4 bg-bg p-8">
       <header className="flex items-center justify-between">
         <h1 className="text-3xl font-black">{t("vote.title")}</h1>
         <div className="flex items-center gap-3">

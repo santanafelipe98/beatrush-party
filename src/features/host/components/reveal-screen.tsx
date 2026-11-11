@@ -16,7 +16,7 @@ export function RevealScreen({ view }: { view: RoomView }) {
     .slice(0, 3);
 
   return (
-    <div className="flex min-h-[calc(100dvh-4rem)] flex-col bg-[radial-gradient(ellipse_at_30%_50%,#0b3a38,#0f0f12_70%)] p-8">
+    <div className="flex min-h-[calc(100dvh-4.5rem)] flex-col bg-[radial-gradient(ellipse_at_30%_50%,#0b3a38,#0f0f12_70%)] p-8">
       <header className="flex justify-between text-2xl font-black">
         <span>
           {t("round.label", { n: view.round!.index + 1 })}{" "}
