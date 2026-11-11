@@ -16,13 +16,13 @@ export function HomeScreen() {
       />
 
       {/* Barra no fluxo da página (não sobreposta): em janelas baixas o título nunca cobre o logo do Deezer. */}
-      <header className="relative z-10 flex items-start justify-between px-6 pt-6">
-        <DeezerLogo height={36} />
-        <LanguageSwitcher />
+      <header className="relative z-10 flex flex-wrap items-start justify-between gap-x-4 gap-y-3 px-6 pt-6">
+        <DeezerLogo height={40} />
+        <LanguageSwitcher className="ml-auto" />
       </header>
 
       <div className="relative flex flex-1 flex-col items-center justify-center gap-2 px-6 pb-10 pt-4">
-        <h1 className="text-brand animate-pulse-beat text-6xl font-black leading-none tracking-tight drop-shadow-[0_0_28px_#ff008066] sm:text-8xl">
+        <h1 className="text-brand animate-pulse-beat text-5xl font-black leading-none tracking-tight drop-shadow-[0_0_28px_#ff008066] min-[380px]:text-6xl sm:text-8xl">
           BEATRUSH
         </h1>
         <p className="mr-[-0.7em] text-xl font-extrabold tracking-[0.7em] text-cyan sm:text-2xl">PARTY</p>

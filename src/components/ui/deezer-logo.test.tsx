@@ -20,18 +20,14 @@ describe("DeezerLogo", () => {
     expect(img.getAttribute("src")).toBe(DEEZER_LOGO_SRC); // servido direto de /public (unoptimized)
     expect(img.style.height).toBe("40px");
     expect(img.style.width).toBe("auto");
-    expect(img.getAttribute("width")).toBe("714");
-    expect(img.getAttribute("height")).toBe("200");
+    expect(img.getAttribute("width")).toBe("2500");
+    expect(img.getAttribute("height")).toBe("367");
     expect(img.draggable).toBe(false);
   });
 
-  it.each([
-    ["pt-BR", "Logotipo do Deezer"],
-    ["en", "Deezer logo"],
-    ["es", "Logotipo de Deezer"],
-  ] as const)("texto alternativo em %s", (locale, alt) => {
+  it.each(["pt-BR", "en", "es"] as const)("texto alternativo em %s é o texto da própria imagem", (locale) => {
     wrap(locale, <DeezerLogo />);
-    expect(screen.getByRole("img", { name: alt })).toBeTruthy();
+    expect(screen.getByRole("img", { name: "Powered by Deezer" })).toBeTruthy();
   });
 });
 
@@ -51,13 +47,13 @@ describe("arquivo do logo em public/", () => {
 
   const svg = () => readFileSync(file, "utf8");
 
-  it("existe, é um SVG e mantém as dimensões originais do kit (714×200)", () => {
+  it("existe, é um SVG e mantém as dimensões originais do kit (2500×367)", () => {
     expect(file.endsWith(".svg")).toBe(true);
     const s = svg();
     expect(s.trimStart().startsWith("<svg")).toBe(true);
-    expect(s).toMatch(/viewBox="0 0 714 200"/);
-    expect(s).toMatch(/width="714"/);
-    expect(s).toMatch(/height="200"/);
+    expect(s).toMatch(/viewBox="0 0 2500 367"/);
+    expect(s).toMatch(/width="2500"/);
+    expect(s).toMatch(/height="367"/);
   });
 
   it("é só desenho branco (sem fundo): depende de fundo escuro", () => {
@@ -70,7 +66,9 @@ describe("arquivo do logo em public/", () => {
     expect(svg()).not.toMatch(/<script|<style|<image|<foreignObject|\bon\w+=|xlink:href|href=|url\(|@import/i);
   });
 
-  it("o PNG antigo não está mais no projeto", () => {
-    expect(existsSync(file.replace(/\.svg$/, ".png"))).toBe(false);
+  it("os logos antigos (PNG e SVG horizontal) não estão mais no projeto", () => {
+    const dir = path.dirname(file);
+    expect(existsSync(path.join(dir, "Logo Horizontal.png"))).toBe(false);
+    expect(existsSync(path.join(dir, "Logo Horizontal.svg"))).toBe(false);
   });
 });
