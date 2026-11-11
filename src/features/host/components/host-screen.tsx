@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useGameStore } from "@/features/realtime/client/store";
 import { useHostSession } from "@/features/realtime/client/hooks";
-import { DeezerLogo, LanguageSwitcher } from "@/components/ui";
+import { AboutDialog, DeezerLogo, LanguageSwitcher } from "@/components/ui";
 import { useI18n } from "@/lib/i18n/provider";
 import { FinalScreen } from "./final-screen";
 import { GenreVoteScreen } from "./genre-vote-screen";
@@ -13,7 +13,7 @@ import { PlayingScreen } from "./playing-screen";
 import { RevealScreen } from "./reveal-screen";
 
 /** Altura do rodapé (logo + controles). As telas usam `min-h-[calc(100dvh-4.5rem)]` para caber junto. */
-const FOOTER = "h-[4.5rem]";
+const FOOTER = "min-h-[4.5rem] flex-wrap gap-x-4 gap-y-2 py-2";
 
 export function HostScreen() {
   useHostSession();
@@ -47,7 +47,10 @@ export function HostScreen() {
       {/* O logo do Deezer é obrigatório (API) e fica visível em TODAS as telas da TV, sem cobrir conteúdo. */}
       {/* sticky: continua visível na base da janela mesmo quando o conteúdo é mais alto que ela */}
       <footer className={`sticky bottom-0 z-20 flex ${FOOTER} items-center justify-between border-t border-line bg-bg px-6`}>
-        <DeezerLogo height={36} />
+        <div className="flex items-center gap-5">
+          <DeezerLogo height={36} />
+          <AboutDialog />
+        </div>
         <div className="flex gap-2 text-sm font-bold">
           {status !== "open" && (
             <span className="rounded-full border border-amber bg-amber/15 px-4 py-2 text-amber">

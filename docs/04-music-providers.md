@@ -82,6 +82,24 @@ proibições. Os valores acima são conservadores, mas **conferir as regras em h
 serviços não podem ser associados a marca/logo de terceiros e outros usos precisam de aprovação prévia da Deezer.
 Se o BeatRush Party for público ou monetizado, confirmar a conformidade com a Deezer antes.
 
+## Aviso "Sobre" (direitos e uso não comercial)
+
+Um botão **Sobre** abre um diálogo (`AboutDialog`, `src/components/ui/about-dialog.tsx`) informando que:
+
+1. o app **não é detentor dos direitos das músicas** nem **fornecedor** de conteúdo musical: apenas **consome o Deezer** (áudio, capas e dados pertencem a seus titulares);
+2. os trechos tocam direto do Deezer; o app **não armazena nem redistribui arquivos de áudio**;
+3. Deezer e seu logotipo são marcas de seus titulares e o app **não é afiliado, patrocinado nem endossado** por ele;
+4. o uso é **exclusivamente não comercial**.
+
+- Textos em `about.*` (pt-BR, en, es). O aviso muda de idioma junto com o app.
+- Aparece na **tela inicial**, no **rodapé da TV** (ao lado do logo) e no **formulário de entrada do celular**.
+- É um **modal** (`<dialog>` nativo), não uma página: na TV, navegar para outra rota abandonaria a sala em andamento. Abrir o Sobre não pausa nem interrompe a partida.
+- Acessível: foco entra no diálogo e volta ao botão ao fechar, Esc fecha, clicar no fundo fecha, abre no topo e rola por dentro em telas pequenas (320×568).
+- Testes: `about-dialog.test.tsx` (conteúdo nos 3 idiomas, abrir/fechar) e `e2e/about.spec.ts` (inclui abrir durante a partida e telas pequenas).
+
+> A frase 3 (sem afiliação/endosso) foi acrescentada por precaução; remova as chaves `about.trademark` se não quiser. Os textos são informativos e
+> **não substituem revisão jurídica**.
+
 ## Catálogo de gêneros (Deezer)
 
 Cada gênero do jogo aponta para uma fonte fixa em `providers/deezer-catalog.ts`:
