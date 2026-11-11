@@ -21,3 +21,11 @@ npm run dev            # http://localhost:3000
 Qualidade: `npm run verify` (lint + tipos + unitários) · `npm run test:e2e` (Playwright).
 
 Documentação em [docs/](docs/README.md).
+
+## Licença
+
+O código é distribuído sob a [Licença MIT](LICENSE). Isso cobre **apenas** o código e a documentação deste repositório.
+
+- O **logo do Deezer**, as **músicas, capas e dados** vêm do Deezer e **não** são cobertos pela MIT (ver [NOTICE](NOTICE)).
+- O uso da **API do Deezer** é restrito a **fins não comerciais** pelos [termos deles](https://developers.deezer.com/termsofuse). Essa restrição vale para quem executa o app com a API, não para o código em si. Quem publicar uma instância deve cumpri-la.
+- O BeatRush Party não é afiliado, patrocinado nem endossado pelo Deezer.
