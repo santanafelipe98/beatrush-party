@@ -1,0 +1,54 @@
+BeatRush Party
+Copyright (c) 2026 Felipe Santana
+
+O código-fonte deste projeto é licenciado sob a Licença MIT (arquivo LICENSE).
+A licença MIT cobre APENAS o código e a documentação escritos para este projeto.
+Os itens abaixo são de terceiros e NÃO estão cobertos pela licença MIT.
+
+--------------------------------------------------------------------------------
+1. Logo / assinatura do Deezer
+--------------------------------------------------------------------------------
+Arquivo: public/brand/deezer/Signatures-PoweredBy-DE.svg
+
+"Deezer" e o logotipo do Deezer são marcas de seus respectivos titulares. O arquivo
+é o ativo oficial do kit de marca do Deezer e é usado aqui porque as diretrizes da
+API do Deezer exigem um logo claramente visível em todo app que a utiliza
+(https://developers.deezer.com/guidelines/logo).
+
+- Não é licenciado sob a MIT; seu uso segue as regras de marca do Deezer
+  (https://deezerbrand.com/).
+- Não deve ser alterado, recolorido nem animado.
+- A presença do arquivo neste repositório não implica afiliação, patrocínio ou
+  endosso do Deezer ao BeatRush Party.
+- Se você reutilizar este projeto, obtenha o logo diretamente do Deezer e confira
+  as condições de uso e de redistribuição vigentes.
+
+--------------------------------------------------------------------------------
+2. Músicas, capas e dados do Deezer
+--------------------------------------------------------------------------------
+O app NÃO contém músicas, capas ou metadados. Em tempo de execução ele os consome
+da API do Deezer. Esse conteúdo pertence a seus respectivos titulares (artistas,
+gravadoras, editoras e Deezer). O BeatRush Party não é detentor desses direitos,
+não é fornecedor de conteúdo musical e não armazena nem redistribui arquivos de
+áudio.
+
+O uso da API do Deezer está sujeito aos Termos de Uso dos desenvolvedores
+(https://developers.deezer.com/termsofuse), que atualmente limitam o uso a fins
+NÃO COMERCIAIS. Essa restrição vem dos termos do Deezer e vale para quem executa
+o app com a API; ela não é uma restrição da licença MIT deste código. Quem
+publicar ou operar uma instância é responsável por cumprir os termos vigentes.
+
+--------------------------------------------------------------------------------
+3. Fonte Montserrat
+--------------------------------------------------------------------------------
+Carregada do Google Fonts em tempo de build (next/font/google) e não incluída no
+repositório. Licenciada sob a SIL Open Font License 1.1.
+
+--------------------------------------------------------------------------------
+4. Dependências
+--------------------------------------------------------------------------------
+As bibliotecas instaladas via npm (Next.js, React, Tailwind CSS, ws, ioredis, zod,
+zustand, qrcode e outras) mantêm suas próprias licenças (majoritariamente MIT,
+ISC e Apache-2.0), disponíveis em node_modules/<pacote>/ após `npm install`.
+Observação: o Next.js pode instalar o binário opcional `sharp` (libvips), sob
+LGPL-3.0, que este projeto não usa nem redistribui.
