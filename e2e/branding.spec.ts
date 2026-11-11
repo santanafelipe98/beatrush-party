@@ -1,4 +1,13 @@
+import { existsSync } from "node:fs";
+import path from "node:path";
 import { expect, test, type Page } from "@playwright/test";
+
+/**
+ * O arquivo do logo é um Brand Asset do Deezer e NÃO é versionado (ver NOTICE): só existe onde o
+ * operador colocou a sua cópia autorizada. Sem ele o app mostra o texto "Powered by Deezer"; estes
+ * testes valem para os dois casos (a verificação do arquivo em si só roda quando ele existe).
+ */
+const HAS_ASSET = existsSync(path.join(process.cwd(), "public", "brand", "deezer", "Signatures-PoweredBy-DE.svg"));
 
 /**
  * A API do Deezer exige "a clearly visible Deezer Logo" em todo app que a usa.
@@ -6,8 +15,10 @@ import { expect, test, type Page } from "@playwright/test";
  * coberto por outro elemento.
  */
 async function expectDeezerLogo(page: Page, where: string) {
-  const logo = page.getByRole("img", { name: /deezer/i });
+  const logo = page.getByTestId("deezer-logo");
   await expect(logo, `logo em ${where}`).toBeVisible();
+  // sem o arquivo, o texto aparece logo após o erro de carregamento (espera com retentativa)
+  if (!HAS_ASSET) await expect(logo, `logo em ${where}`).toHaveText("Powered by Deezer");
   const info = await logo.evaluate((el) => {
     const img = el as HTMLImageElement;
     const r = img.getBoundingClientRect();
@@ -16,6 +27,7 @@ async function expectDeezerLogo(page: Page, where: string) {
     for (const fx of [0.05, 0.25, 0.5, 0.75, 0.95])
       for (const fy of [0.15, 0.5, 0.85]) points.push([r.left + r.width * fx, r.top + r.height * fy]);
     return {
+      isImage: el.tagName === "IMG",
       loaded: img.complete && img.naturalWidth === 2500 && img.naturalHeight === 367,
       width: r.width,
       height: r.height,
@@ -25,9 +37,15 @@ async function expectDeezerLogo(page: Page, where: string) {
       opacity: getComputedStyle(img).opacity,
     };
   });
-  expect(info.loaded, `${where}: arquivo do logo não carregou`).toBe(true);
+  if (HAS_ASSET) {
+    expect(info.isImage, `${where}: deveria mostrar a imagem`).toBe(true);
+    expect(info.loaded, `${where}: arquivo do logo não carregou`).toBe(true);
+    expect(info.ratio, `${where}: proporção alterada`).toBeCloseTo(2500 / 367, 1);
+    } else {
+    expect(info.isImage, `${where}: sem o arquivo deveria mostrar o texto`).toBe(false);
+    await expect(logo).toHaveText("Powered by Deezer");
+  }
   expect(info.height, `${where}: logo pequeno demais`).toBeGreaterThanOrEqual(28);
-  expect(info.ratio, `${where}: proporção alterada`).toBeCloseTo(2500 / 367, 1);
   expect(info.inViewport, `${where}: logo fora da tela`).toBe(true);
   expect(info.onTop, `${where}: logo coberto por outro elemento`).toBe(true);
   expect(info.opacity).toBe("1");
@@ -138,7 +156,7 @@ test("em telas estreitas o logo não esconde nem sobrepõe o seletor de idioma",
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth - innerWidth);
     expect(overflow, `home ${at}: rolagem horizontal`).toBeLessThanOrEqual(0);
 
-    const logoBox = (await page.getByRole("img", { name: /deezer/i }).boundingBox())!;
+    const logoBox = (await page.getByTestId("deezer-logo").boundingBox())!;
     for (const name of ["Português (Brasil)", "English", "Español"]) {
       const box = await page.getByRole("button", { name }).boundingBox();
       expect(box, `home ${at}: botão ${name}`).not.toBeNull();
@@ -162,4 +180,21 @@ test("em telas estreitas o logo não esconde nem sobrepõe o seletor de idioma",
     await expectDeezerLogo(page, `entrada do celular ${at}`);
     await ctx.close();
   }
+});
+
+// Plano B: sem o arquivo do logo (clone do repositório, arquivo removido), nada de imagem quebrada.
+test("sem o arquivo do logo mostra o texto Powered by Deezer, sem imagem quebrada", async ({ page }) => {
+  await page.route("**/brand/deezer/**", (route) => route.abort());
+  await page.goto("/");
+  const logo = page.getByTestId("deezer-logo");
+  await expect(logo).toHaveText("Powered by Deezer");
+  await expect(logo).toBeVisible();
+  expect(await logo.evaluate((el) => el.tagName)).toBe("SPAN");
+  await expect(page.locator("img[src*=\"brand/deezer\"]")).toHaveCount(0);
+
+  await page.goto("/play");
+  await expect(page.getByTestId("deezer-logo")).toHaveText("Powered by Deezer");
+  await page.goto("/host");
+  await expect(page.getByTestId("room-code")).toBeVisible();
+  await expect(page.getByTestId("deezer-logo")).toHaveText("Powered by Deezer");
 });

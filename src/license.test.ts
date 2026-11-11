@@ -1,4 +1,4 @@
-import { existsSync, readFileSync } from "node:fs";
+import { readFileSync } from "node:fs";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
 import { DEEZER_LOGO_SRC } from "@/components/ui/deezer-logo";
@@ -20,9 +20,8 @@ describe("licença e avisos de terceiros", () => {
     expect(pkg.license).toBe("MIT");
   });
 
-  it("NOTICE aponta para o arquivo do logo que o app realmente usa", () => {
+  it("NOTICE cita o caminho do logo que o app usa (mas o arquivo NÃO é distribuído)", () => {
     const logoPath = "public" + decodeURIComponent(DEEZER_LOGO_SRC);
-    expect(existsSync(path.join(root, logoPath))).toBe(true);
     expect(read("NOTICE")).toContain(logoPath);
   });
 
