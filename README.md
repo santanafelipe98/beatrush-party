@@ -4,6 +4,7 @@ Quiz musical multiplayer: a TV mostra e toca; os celulares respondem. Quem acert
 
 - **Next.js + Tailwind** · **WebSocket (`ws`)** · **Zustand** · **Zod**
 - Música via `MusicProvider` (Deezer, Mock para testes)
+- **Idiomas:** pt-BR, inglês e espanhol (por aparelho; ver [docs/07-i18n.md](docs/07-i18n.md))
 
 ```bash
 npm install

@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { AVATAR_COLORS, Button } from "@/components/ui";
+import { AVATAR_COLORS, Button, LanguageSwitcher } from "@/components/ui";
+import { useI18n } from "@/lib/i18n/provider";
 import { cn } from "@/lib/cn";
 
 export interface JoinData {
@@ -19,6 +20,7 @@ interface JoinFormProps {
 const LABEL = "text-[11px] font-extrabold tracking-[0.15em] text-muted";
 
 export function JoinForm({ initialCode = "", error, onSubmit }: JoinFormProps) {
+  const { t } = useI18n();
   const [code, setCode] = useState(initialCode.toUpperCase().replace(/[^A-Z]/g, "").slice(0, 4));
   const [name, setName] = useState("");
   const [avatar, setAvatar] = useState(1);
@@ -32,10 +34,11 @@ export function JoinForm({ initialCode = "", error, onSubmit }: JoinFormProps) {
         if (valid) onSubmit({ code, name: name.trim(), avatar });
       }}
     >
+      <LanguageSwitcher className="self-center" />
       <h1 className="text-brand text-center text-3xl font-black">BEATRUSH</h1>
 
       <label className="mt-2 flex flex-col gap-2">
-        <span className={LABEL}>CÓDIGO DA SALA</span>
+        <span className={LABEL}>{t("join.code")}</span>
         <input
           name="code"
           value={code}
@@ -50,26 +53,26 @@ export function JoinForm({ initialCode = "", error, onSubmit }: JoinFormProps) {
       </label>
 
       <label className="flex flex-col gap-2">
-        <span className={LABEL}>SEU NOME</span>
+        <span className={LABEL}>{t("join.name")}</span>
         <input
           name="name"
           value={name}
           onChange={(e) => setName(e.target.value)}
           maxLength={16}
           autoComplete="nickname"
-          placeholder="Como te chamam?"
+          placeholder={t("join.namePlaceholder")}
           className="h-12 rounded-xl border-2 border-line bg-surface px-4 text-lg font-bold outline-none focus:border-cyan"
         />
       </label>
 
       <fieldset className="flex flex-col gap-2">
-        <legend className={LABEL}>AVATAR</legend>
+        <legend className={LABEL}>{t("join.avatar")}</legend>
         <div className="mt-2 grid grid-cols-5 gap-2">
           {AVATAR_COLORS.map((color, i) => (
             <button
               key={color}
               type="button"
-              aria-label={`Avatar ${i + 1}`}
+              aria-label={t("join.avatarN", { n: i + 1 })}
               aria-pressed={avatar === i}
               onClick={() => setAvatar(i)}
               className={cn("aspect-square rounded-full", avatar === i && "outline-[3px] outline-offset-2 outline-white")}
@@ -86,7 +89,7 @@ export function JoinForm({ initialCode = "", error, onSubmit }: JoinFormProps) {
       )}
 
       <Button type="submit" disabled={!valid} className="mt-auto">
-        Entrar no Jogo
+        {t("join.submit")}
       </Button>
     </form>
   );

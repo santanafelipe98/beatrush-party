@@ -1,5 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Montserrat } from "next/font/google";
+import { I18nProvider } from "@/lib/i18n/provider";
+import { getLocale, getTranslator } from "@/lib/i18n/server";
 import "./globals.css";
 
 const montserrat = Montserrat({
@@ -8,10 +10,10 @@ const montserrat = Montserrat({
   weight: ["500", "600", "700", "800", "900"],
 });
 
-export const metadata: Metadata = {
-  title: "BeatRush Party",
-  description: "Adivinhe a música mais rápido que seus amigos",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const { t } = await getTranslator();
+  return { title: "BeatRush Party", description: t("app.tagline") };
+}
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -19,10 +21,13 @@ export const viewport: Viewport = {
   themeColor: "#08080b",
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const locale = await getLocale();
   return (
-    <html lang="pt-BR" className={`${montserrat.variable} h-full antialiased`}>
-      <body className="min-h-full flex flex-col">{children}</body>
+    <html lang={locale} className={`${montserrat.variable} h-full antialiased`}>
+      <body className="min-h-full flex flex-col">
+        <I18nProvider initialLocale={locale}>{children}</I18nProvider>
+      </body>
     </html>
   );
 }

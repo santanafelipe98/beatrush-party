@@ -1,12 +1,14 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useI18n } from "@/lib/i18n/provider";
 
 /**
  * Toca o trecho da faixa na TV. Navegadores podem bloquear autoplay sem gesto do usuário;
  * nesse caso mostramos um botão para liberar o som.
  */
 export function HostAudio({ src, muted }: { src?: string; muted: boolean }) {
+  const { t } = useI18n();
   const ref = useRef<HTMLAudioElement>(null);
   const [blocked, setBlocked] = useState(false);
 
@@ -30,7 +32,7 @@ export function HostAudio({ src, muted }: { src?: string; muted: boolean }) {
           onClick={() => ref.current?.play().then(() => setBlocked(false))}
           className="fixed bottom-16 right-4 z-20 rounded-full bg-amber px-5 py-3 text-sm font-extrabold text-bg"
         >
-          Toque para ativar o som
+          {t("host.enableSound")}
         </button>
       )}
     </>

@@ -1,10 +1,14 @@
+"use client";
+
 import { MAX_PLAYERS, MIN_PLAYERS } from "@/features/game";
 import type { RoomView } from "@/features/realtime/protocol";
 import { Avatar } from "@/components/ui";
 import { cn } from "@/lib/cn";
+import { useI18n } from "@/lib/i18n/provider";
 import { QrCode } from "./qr-code";
 
 export function LobbyScreen({ view, joinUrl }: { view: RoomView; joinUrl: string }) {
+  const { t } = useI18n();
   const host = view.players.find((p) => p.id === view.hostPlayerId);
   const slots = Math.min(MAX_PLAYERS, Math.max(4, view.players.length + 1));
   const ready = view.players.filter((p) => p.connected).length >= MIN_PLAYERS;
@@ -12,7 +16,7 @@ export function LobbyScreen({ view, joinUrl }: { view: RoomView; joinUrl: string
   return (
     <div className="grid min-h-dvh grid-cols-1 bg-bg lg:grid-cols-[minmax(320px,0.42fr)_1fr]">
       <section className="flex flex-col items-center gap-3 border-b border-line bg-gradient-to-b from-[#1d0f33] to-surface p-8 lg:border-b-0 lg:border-r">
-        <p className="text-sm font-bold tracking-[0.2em] text-muted">CÓDIGO DA SALA</p>
+        <p className="text-sm font-bold tracking-[0.2em] text-muted">{t("lobby.code")}</p>
         <p
           data-testid="room-code"
           className="text-7xl font-black leading-none tracking-[0.08em] [text-shadow:0_0_30px_#ff0080] sm:text-8xl"
@@ -21,15 +25,15 @@ export function LobbyScreen({ view, joinUrl }: { view: RoomView; joinUrl: string
         </p>
         <QrCode value={joinUrl} />
         <p className="text-base font-bold text-muted">
-          ou acesse <span className="text-cyan">{joinUrl.replace(/^https?:\/\//, "")}</span>
+          {t("lobby.orVisit")} <span className="text-cyan">{joinUrl.replace(/^https?:\/\//, "")}</span>
         </p>
       </section>
 
-      <section className="flex flex-col gap-4 p-8">
+      <section className="flex flex-col gap-4 p-8 pb-20">
         <div className="flex items-baseline justify-between">
-          <h1 className="text-3xl font-extrabold">Jogadores</h1>
+          <h1 className="text-3xl font-extrabold">{t("lobby.players")}</h1>
           <p className="text-lg font-bold text-cyan">
-            {view.players.length} / {MAX_PLAYERS} conectados
+            {t("lobby.connected", { count: view.players.length, max: MAX_PLAYERS })}
           </p>
         </div>
 
@@ -45,9 +49,11 @@ export function LobbyScreen({ view, joinUrl }: { view: RoomView; joinUrl: string
                 <div>
                   <p className="text-xl font-extrabold">
                     {p.name}
-                    {p.id === view.hostPlayerId && " (Host)"}
+                    {p.id === view.hostPlayerId && ` ${t("lobby.hostTag")}`}
                   </p>
-                  <p className="text-xs font-semibold opacity-70">{p.connected ? "Pronto" : "Offline"}</p>
+                  <p className="text-xs font-semibold opacity-70">
+                    {p.connected ? t("lobby.ready") : t("lobby.offline")}
+                  </p>
                 </div>
               </li>
             ) : (
@@ -57,8 +63,8 @@ export function LobbyScreen({ view, joinUrl }: { view: RoomView; joinUrl: string
               >
                 <Avatar name="+" avatar={9} size={44} className="!bg-track !text-[#6b6b80]" />
                 <div>
-                  <p className="text-xl font-extrabold">Aguardando…</p>
-                  <p className="text-xs font-semibold opacity-70">Vaga livre</p>
+                  <p className="text-xl font-extrabold">{t("lobby.waiting")}</p>
+                  <p className="text-xs font-semibold opacity-70">{t("lobby.freeSlot")}</p>
                 </div>
               </li>
             );
@@ -72,8 +78,8 @@ export function LobbyScreen({ view, joinUrl }: { view: RoomView; joinUrl: string
           )}
         >
           {ready
-            ? `${host?.name ?? "O anfitrião"} pode iniciar a seleção de gêneros pelo celular`
-            : `Aguardando jogadores (mín. ${MIN_PLAYERS})`}
+            ? t("lobby.canStart", { name: host?.name ?? t("lobby.hostFallback") })
+            : t("lobby.needPlayers", { min: MIN_PLAYERS })}
         </div>
       </section>
     </div>

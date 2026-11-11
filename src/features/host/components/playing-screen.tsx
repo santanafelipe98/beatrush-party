@@ -1,8 +1,12 @@
+"use client";
+
 import type { RoomView } from "@/features/realtime/protocol";
 import { useCountdown } from "@/features/realtime/client/hooks";
+import { useI18n } from "@/lib/i18n/provider";
 import { CountdownRing, Equalizer, SHAPE_TV_COLORS, ShapeIcon } from "@/components/ui";
 
 export function PlayingScreen({ view }: { view: RoomView }) {
+  const { t } = useI18n();
   const round = view.round!;
   const seconds = useCountdown(round.startedAt + round.durationMs);
   const connected = view.players.filter((p) => p.connected);
@@ -13,15 +17,16 @@ export function PlayingScreen({ view }: { view: RoomView }) {
     <div className="flex min-h-dvh flex-col gap-4 bg-[radial-gradient(ellipse_at_50%_0%,#2a0f4a,#0f0f12_70%)] p-8">
       <header className="flex items-center justify-between">
         <h1 className="text-2xl font-black">
-          Música {round.index + 1} <span className="font-bold text-muted">de {view.totalRounds}</span>
+          {t("round.label", { n: round.index + 1 })}{" "}
+          <span className="font-bold text-muted">{t("round.of", { total: view.totalRounds })}</span>
         </h1>
         <div className="flex h-8 items-center gap-2">
           <Equalizer bars={7} seed={4} origin="center" className="h-full w-16" barClassName="bg-pink" />
-          <span className="animate-glow text-sm font-extrabold tracking-[0.15em] text-pink">TOCANDO</span>
+          <span className="animate-glow text-sm font-extrabold tracking-[0.15em] text-pink">{t("play.nowPlaying")}</span>
         </div>
       </header>
 
-      <div role="progressbar" aria-label="tempo da rodada" aria-valuenow={Math.round(pct)} className="h-2 rounded bg-track">
+      <div role="progressbar" aria-label={t("play.timeLabel")} aria-valuenow={Math.round(pct)} className="h-2 rounded bg-track">
         <div
           className="h-full rounded bg-gradient-to-r from-cyan to-green shadow-[0_0_14px_#00dfd888]"
           style={{ width: `${pct}%`, transition: "width 150ms linear" }}
@@ -31,7 +36,7 @@ export function PlayingScreen({ view }: { view: RoomView }) {
       <div className="flex items-center justify-center gap-6 sm:gap-12">
         <Equalizer bars={16} seed={2} origin="center" className="hidden h-24 w-40 sm:flex" barClassName="bg-pink" />
         <div className="flex flex-col items-center gap-2">
-          <h2 className="text-center text-3xl font-black">Qual é a música?</h2>
+          <h2 className="text-center text-3xl font-black">{t("play.question")}</h2>
           <CountdownRing seconds={seconds} percent={pct} size={132} />
         </div>
         <Equalizer bars={16} seed={5} origin="center" className="hidden h-24 w-40 sm:flex" barClassName="bg-purple" />
@@ -59,7 +64,7 @@ export function PlayingScreen({ view }: { view: RoomView }) {
           <span className="font-black text-cyan">
             {answered}/{connected.length}
           </span>{" "}
-          jogadores já responderam!
+          {t("play.answeredSuffix")}
         </p>
         <div className="flex gap-2">
           {view.players.map((p) => {

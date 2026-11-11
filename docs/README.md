@@ -8,3 +8,4 @@
 | [04-music-providers.md](04-music-providers.md) | Abstração de provedores de música (Deezer) |
 | [05-game-rules.md](05-game-rules.md) | Regras, fases e pontuação |
 | [06-future-work.md](06-future-work.md) | Melhorias adiadas (ex.: validação das fontes de gênero) |
+| [07-i18n.md](07-i18n.md) | Internacionalização (pt-BR, en, es) |
