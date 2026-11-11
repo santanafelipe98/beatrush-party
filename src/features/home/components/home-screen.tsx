@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { DeezerLogo, Equalizer, LanguageSwitcher } from "@/components/ui";
+import { AboutDialog, DeezerLogo, Equalizer, LanguageSwitcher } from "@/components/ui";
 import { useI18n } from "@/lib/i18n/provider";
 
 export function HomeScreen() {
@@ -37,6 +37,7 @@ export function HomeScreen() {
           {t("home.join")}
         </Link>
         <p className="mt-1 text-sm text-muted">{t("app.tagline")}</p>
+        <AboutDialog className="mt-3" />
       </div>
     </main>
   );

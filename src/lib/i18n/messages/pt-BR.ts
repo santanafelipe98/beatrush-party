@@ -8,6 +8,15 @@ export const ptBR = {
   "language.label": "Idioma",
   "brand.deezer": "Powered by Deezer",
 
+  "about.open": "Sobre",
+  "about.title": "Sobre o BeatRush Party",
+  "about.intro": "O BeatRush Party é um jogo de quiz musical criado apenas para entretenimento.",
+  "about.rights": "Este app não é detentor dos direitos das músicas e também não é fornecedor de conteúdo musical. Ele apenas consome, por meio da API do Deezer, trechos de áudio, capas e informações das faixas, que pertencem aos seus respectivos titulares (artistas, gravadoras e editoras).",
+  "about.noStorage": "Os trechos tocam diretamente a partir do Deezer: o app não armazena nem redistribui arquivos de áudio.",
+  "about.trademark": "Deezer e o logotipo do Deezer são marcas de seus respectivos titulares. O BeatRush Party não é afiliado, patrocinado nem endossado pelo Deezer.",
+  "about.nonCommercial": "Uso exclusivamente para fins não comerciais.",
+  "about.close": "Fechar",
+
   "home.create": "Criar Nova Sala",
   "home.join": "Já tenho um código — entrar no jogo",
 

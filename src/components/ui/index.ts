@@ -1,4 +1,5 @@
 export * from "./theme";
+export * from "./about-dialog";
 export * from "./avatar";
 export * from "./button";
 export * from "./equalizer";

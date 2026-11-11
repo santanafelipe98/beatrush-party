@@ -5,6 +5,15 @@ export const en: Messages = {
   "language.label": "Language",
   "brand.deezer": "Powered by Deezer",
 
+  "about.open": "About",
+  "about.title": "About BeatRush Party",
+  "about.intro": "BeatRush Party is a music quiz game made purely for entertainment.",
+  "about.rights": "This app does not own the rights to the music and is not a music content provider. It only consumes, through the Deezer API, audio previews, cover art and track information, which belong to their respective rights holders (artists, labels and publishers).",
+  "about.noStorage": "Previews are played directly from Deezer: the app does not store or redistribute audio files.",
+  "about.trademark": "Deezer and the Deezer logo are trademarks of their respective owners. BeatRush Party is not affiliated with, sponsored by or endorsed by Deezer.",
+  "about.nonCommercial": "For non-commercial use only.",
+  "about.close": "Close",
+
   "home.create": "Create New Room",
   "home.join": "I already have a code — join the game",
 
