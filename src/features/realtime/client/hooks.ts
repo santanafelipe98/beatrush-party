@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { uuid } from "@/lib/uuid";
 import type { ClientMessage } from "../protocol";
 import { GameSocket, defaultWsUrl } from "./game-socket";
 import { useGameStore } from "./store";
@@ -21,7 +22,7 @@ export function getPlayerId(): string {
   const store = safeStorage("local");
   let id = store?.getItem(PLAYER_ID_KEY);
   if (!id) {
-    id = crypto.randomUUID();
+    id = uuid();
     store?.setItem(PLAYER_ID_KEY, id);
   }
   return id;
