@@ -36,6 +36,7 @@ src/
     host/components/           telas da TV
     controller/components/     telas do celular
   server/                      RoomManager (orquestração/timers) + transporte ws
+    persistence/               RoomStore/TrackCache: memória e Redis (ioredis)
   lib/                         utilidades (cn, uuid) e i18n/ (pt-BR, en, es — ver 07-i18n.md)
 e2e/                           testes Playwright
 docs/                          decisões e arquitetura
@@ -59,8 +60,9 @@ outro provedor, ou o transporte por outro, sem tocar nas regras.
 1. **Servidor autoritativo.** O cliente nunca decide pontuação nem tempo; só envia intenções
    (`player:answer`). O servidor carimba o tempo e valida a janela.
 2. **Snapshots, não deltas.** Cada mudança reenvia a `RoomView` completa, projetada por papel.
-3. **Estado em memória.** Suficiente para uma instância; `RoomManager` concentra o acoplamento caso
-   se migre para Redis.
+3. **Estado em memória, persistido no Redis (opcional).** Cada sala vive em memória (rápido) e é gravada a
+   cada mudança no Redis, junto com o prazo do timer armado; ao reiniciar, `RoomManager.restore()` recarrega
+   e rearma tudo. Uma instância por vez. Ver `08-persistence-redis.md`.
 4. **Host é um jogador.** A TV não possui controles; o primeiro jogador que entra inicia a partida
    (o design da TV mostrava um botão, mas TV/notebook raramente têm entrada prática).
 5. **Fallback de catálogo.** Se o provedor falha, `RoomManager` usa o `mock` (sem áudio) em vez de

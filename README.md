@@ -15,6 +15,8 @@ npm run dev            # http://localhost:3000
 2. No celular, escaneie o QR Code (ou abra `/play` e digite o código).
 3. O primeiro jogador inicia a votação de gêneros e a partida começa.
 
+**Redis (opcional):** `npm run redis:up` e `REDIS_URL=redis://localhost:6379` no `.env.local` para as partidas sobreviverem a reinícios (ver [docs/08-persistence-redis.md](docs/08-persistence-redis.md)).
+
 Qualidade: `npm run verify` (lint + tipos + unitários) · `npm run test:e2e` (Playwright).
 
 Documentação em [docs/](docs/README.md).
