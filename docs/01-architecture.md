@@ -95,3 +95,16 @@ que não sejam `localhost`, e a página renderiza mas **não hidrata** (inputs e
 inertes). Por isso `next.config.ts` define `allowedDevOrigins` com as faixas de IP privado
 (`192.168.*.*`, `10.*.*.*`, `172.*.*.*`) e `127.0.0.1`. O e2e `lan-access.spec.ts` cobre essa regressão.
 O Playwright usa `NEXT_DIST_DIR=.next-e2e` para não colidir com um `npm run dev` já aberto.
+
+## Animações
+
+Todas as animações do protótipo são **CSS puro** (sem biblioteca): equalizador (`eq`), pulso
+(`pulse-beat`), brilho (`glow`), anel de contagem (`conic-gradient`), confete (`confetti-fall`),
+pódio subindo (`rise`) e transição entre telas (`fade-up`). São loops simples e declarativos,
+que rodam na GPU, não pesam no bundle e respeitam `prefers-reduced-motion`.
+Uma biblioteca (ex.: Motion) só faria sentido para coreografia dependente de estado, como animar a
+reordenação do ranking entre rodadas.
+
+Atenção: os `@keyframes` ficam **fora** do `@theme` em `globals.css`. No Tailwind v4, keyframes
+dentro de `@theme` só são emitidos se uma classe `animate-*` correspondente for usada, e o
+equalizador/confete aplicam a animação inline. O e2e `animations.spec.ts` protege contra isso.

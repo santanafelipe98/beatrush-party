@@ -21,36 +21,40 @@
   --color-red: #ef4444;
   --color-blue: #3b82f6;
 
-  --animate-eq: eq 0.6s ease-in-out infinite alternate;
   --animate-pulse-beat: pulse-beat 1.6s ease-in-out infinite;
   --animate-glow: glow 2s ease-in-out infinite;
+  --animate-fade-up: fade-up 0.35s ease-out both;
+  --animate-rise: rise 0.7s cubic-bezier(0.2, 0.9, 0.3, 1) both;
+}
 
-  @keyframes eq {
-    from {
-      transform: scaleY(0.15);
-    }
-    to {
-      transform: scaleY(1);
-    }
-  }
-  @keyframes pulse-beat {
-    0%,
-    100% {
-      transform: scale(1);
-    }
-    50% {
-      transform: scale(1.05);
-    }
-  }
-  @keyframes glow {
-    0%,
-    100% {
-      opacity: 0.55;
-    }
-    50% {
-      opacity: 1;
-    }
-  }
+/*
+ * Keyframes FORA do @theme de propósito: no Tailwind v4, @keyframes dentro de @theme só são
+ * emitidos quando alguma classe animate-* correspondente é usada. O equalizador e o confete
+ * aplicam a animação inline, então precisam existir sempre.
+ */
+@keyframes eq {
+  from { transform: scaleY(0.15); }
+  to { transform: scaleY(1); }
+}
+@keyframes pulse-beat {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+@keyframes glow {
+  0%, 100% { opacity: 0.55; }
+  50% { opacity: 1; }
+}
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes rise {
+  from { transform: scaleY(0); }
+  to { transform: scaleY(1); }
+}
+@keyframes confetti-fall {
+  from { transform: translateY(-12vh) rotate(var(--r, 0deg)); }
+  to { transform: translateY(112vh) rotate(calc(var(--r, 0deg) + 360deg)); }
 }
 
 @layer base {
