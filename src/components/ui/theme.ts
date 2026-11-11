@@ -13,10 +13,10 @@ export const AVATAR_COLORS = [
 ] as const;
 
 export const SHAPES = [
-  { name: "triângulo", color: "#EF4444", clip: "polygon(50% 8%,92% 88%,8% 88%)" },
-  { name: "losango", color: "#3B82F6", clip: "polygon(50% 0,100% 50%,50% 100%,0 50%)" },
-  { name: "círculo", color: "#F59E0B", clip: "circle(50%)" },
-  { name: "quadrado", color: "#10B981", clip: "inset(8%)" },
+  { key: "shape.triangle", color: "#EF4444", clip: "polygon(50% 8%,92% 88%,8% 88%)" },
+  { key: "shape.diamond", color: "#3B82F6", clip: "polygon(50% 0,100% 50%,50% 100%,0 50%)" },
+  { key: "shape.circle", color: "#F59E0B", clip: "circle(50%)" },
+  { key: "shape.square", color: "#10B981", clip: "inset(8%)" },
 ] as const;
 
 /** Variantes escurecidas usadas nos botões grandes da TV. */

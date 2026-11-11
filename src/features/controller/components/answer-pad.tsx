@@ -4,6 +4,7 @@ import type { RoomView } from "@/features/realtime/protocol";
 import { useCountdown } from "@/features/realtime/client/hooks";
 import { Avatar, ProgressBar, SHAPES, ShapeIcon } from "@/components/ui";
 import { cn } from "@/lib/cn";
+import { useI18n } from "@/lib/i18n/provider";
 
 interface AnswerPadProps {
   view: RoomView;
@@ -12,6 +13,7 @@ interface AnswerPadProps {
 }
 
 export function AnswerPad({ view, playerId, onAnswer }: AnswerPadProps) {
+  const { t, n } = useI18n();
   const round = view.round!;
   const me = view.players.find((p) => p.id === playerId);
   const reveal = round.reveal;
@@ -21,14 +23,20 @@ export function AnswerPad({ view, playerId, onAnswer }: AnswerPadProps) {
   const playing = view.phase === "playing";
   const answered = chosen !== null;
 
-  let feedback = { title: "Qual é a música?", detail: "Toque na forma que aparece na TV", tone: "neutral" };
-  if (playing && answered) feedback = { title: "Resposta enviada", detail: "Aguardando os outros jogadores…", tone: "wait" };
+  let feedback = { title: t("play.question"), detail: t("pad.hint"), tone: "neutral" };
+  if (playing && answered) feedback = { title: t("pad.sent"), detail: t("pad.waitOthers"), tone: "wait" };
   if (reveal && result?.correct)
-    feedback = { title: `Acertou! +${result.points}`, detail: `Resposta em ${((result.elapsedMs ?? 0) / 1000).toFixed(1).replace(".", ",")}s`, tone: "ok" };
+    feedback = {
+      title: t("pad.correct", { points: result.points }),
+      detail: t("pad.answeredIn", {
+        s: n((result.elapsedMs ?? 0) / 1000, { minimumFractionDigits: 1, maximumFractionDigits: 1 }),
+      }),
+      tone: "ok",
+    };
   if (reveal && result && !result.correct)
     feedback = answered
-      ? { title: "Errou · +0", detail: "A resposta certa era o verde", tone: "bad" }
-      : { title: "Sem resposta", detail: "Tempo esgotado · próxima música já!", tone: "late" };
+      ? { title: t("pad.wrong"), detail: t("pad.wrongHint"), tone: "bad" }
+      : { title: t("pad.none"), detail: t("pad.noneHint"), tone: "late" };
 
   const tones: Record<string, string> = {
     neutral: "border-line bg-surface",
@@ -52,18 +60,18 @@ export function AnswerPad({ view, playerId, onAnswer }: AnswerPadProps) {
           <span className="text-[17px] font-extrabold">{me?.name}</span>
         </div>
         <div className="text-right">
-          <p className="text-[10px] font-extrabold tracking-[0.12em] text-muted">PONTOS</p>
-          <p className="text-xl font-black text-cyan">{(me?.score ?? 0).toLocaleString("pt-BR")}</p>
+          <p className="text-[10px] font-extrabold tracking-[0.12em] text-muted">{t("pad.points")}</p>
+          <p className="text-xl font-black text-cyan">{n(me?.score ?? 0)}</p>
         </div>
       </div>
 
       <div className="flex justify-between text-xs font-bold text-muted">
         <span>
-          Música {round.index + 1}/{view.totalRounds}
+          {t("round.short", { n: round.index + 1, total: view.totalRounds })}
         </span>
-        <span>{playing ? `0:${String(Math.ceil(seconds)).padStart(2, "0")}` : "Revelação"}</span>
+        <span>{playing ? `0:${String(Math.ceil(seconds)).padStart(2, "0")}` : t("pad.reveal")}</span>
       </div>
-      <ProgressBar label="tempo" value={playing ? (seconds * 1000 * 100) / round.durationMs : 100} fillClassName={playing ? "bg-cyan" : "bg-muted"} />
+      <ProgressBar label={t("pad.timeLabel")} value={playing ? (seconds * 1000 * 100) / round.durationMs : 100} fillClassName={playing ? "bg-cyan" : "bg-muted"} />
 
       <div className="grid flex-1 grid-cols-2 gap-3">
         {SHAPES.map((shape, i) => {
@@ -72,10 +80,10 @@ export function AnswerPad({ view, playerId, onAnswer }: AnswerPadProps) {
           const dim = reveal ? !isCorrect && !isChosen : answered && !isChosen;
           return (
             <button
-              key={shape.name}
+              key={shape.key}
               type="button"
               data-testid={`answer-${i}`}
-              aria-label={shape.name}
+              aria-label={t(shape.key)}
               aria-pressed={isChosen}
               disabled={!playing || answered}
               onClick={() => {

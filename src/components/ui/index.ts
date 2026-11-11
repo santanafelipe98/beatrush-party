@@ -7,3 +7,4 @@ export * from "./shape-icon";
 export * from "./timer-pill";
 export * from "./confetti";
 export * from "./countdown-ring";
+export * from "./language-switcher";

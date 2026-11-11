@@ -1,40 +1,44 @@
+"use client";
+
 import { GENRES } from "@/features/game";
 import type { RoomView } from "@/features/realtime/protocol";
 import { useCountdown } from "@/features/realtime/client/hooks";
 import { ProgressBar, TimerPill } from "@/components/ui";
 import { cn } from "@/lib/cn";
+import { useI18n } from "@/lib/i18n/provider";
 
 const TOP_COLORS = ["#FF0080", "#7928CA", "#00DFD8"];
 
 export function GenreVoteScreen({ view }: { view: RoomView }) {
+  const { t } = useI18n();
   const seconds = useCountdown(view.voteEndsAt);
   const connected = view.players.filter((p) => p.connected).length || 1;
   const tally = view.tally ?? GENRES.map((genre) => ({ genre, votes: 0 }));
   const ranked = [...tally].sort((a, b) => b.votes - a.votes);
-  const rankOf = (g: string) => ranked.findIndex((t) => t.genre === g);
+  const rankOf = (g: string) => ranked.findIndex((r) => r.genre === g);
   const total = view.voteEndsAt ? Math.max(1, view.voteEndsAt - view.serverNow) : 1;
-  const maxVotes = Math.max(1, ...tally.map((t) => t.votes));
+  const maxVotes = Math.max(1, ...tally.map((r) => r.votes));
 
   return (
     <div className="flex min-h-dvh flex-col gap-4 bg-bg p-8">
       <header className="flex items-center justify-between">
-        <h1 className="text-3xl font-black">Qual vai ser a vibe?</h1>
+        <h1 className="text-3xl font-black">{t("vote.title")}</h1>
         <div className="flex items-center gap-3">
           <span className="text-sm font-bold text-muted">
-            VOTOS {view.votedIds.length}/{view.players.length}
+            {t("vote.votes", { done: view.votedIds.length, total: view.players.length })}
           </span>
           <TimerPill seconds={seconds} className="text-2xl" />
         </div>
       </header>
       <ProgressBar
-        label="tempo de votação"
+        label={t("vote.timeLabel")}
         value={(seconds * 1000 * 100) / Math.max(total, seconds * 1000)}
         fillClassName="bg-gradient-to-r from-amber to-red"
       />
 
       <ul className="grid flex-1 grid-cols-1 gap-x-9 gap-y-3 sm:grid-cols-2">
         {GENRES.map((genre) => {
-          const votes = tally.find((t) => t.genre === genre)?.votes ?? 0;
+          const votes = tally.find((r) => r.genre === genre)?.votes ?? 0;
           const pct = Math.round((votes / connected) * 100);
           const r = rankOf(genre);
           const top = votes > 0 && r < 3;
@@ -43,7 +47,7 @@ export function GenreVoteScreen({ view }: { view: RoomView }) {
               <div className="flex justify-between text-lg font-extrabold">
                 <span>
                   {top && `#${r + 1} `}
-                  {genre}
+                  {t(`genre.${genre}`)}
                 </span>
                 <span style={{ color: top ? TOP_COLORS[r] : "#9a9aab" }}>{pct}%</span>
               </div>
@@ -63,17 +67,17 @@ export function GenreVoteScreen({ view }: { view: RoomView }) {
       </ul>
 
       <footer className="flex items-center gap-4 rounded-2xl border border-line bg-surface px-5 py-3">
-        <span className="text-xs font-extrabold tracking-[0.15em] text-cyan">TOP 3</span>
+        <span className="text-xs font-extrabold tracking-[0.15em] text-cyan">{t("vote.top3")}</span>
         {ranked
           .slice(0, 3)
-          .filter((t) => t.votes > 0)
-          .map((t, i) => (
+          .filter((r) => r.votes > 0)
+          .map((r, i) => (
             <span
-              key={t.genre}
+              key={r.genre}
               className="rounded-full px-5 py-2 text-lg font-extrabold"
               style={{ background: TOP_COLORS[i], color: i === 2 ? "#0f0f12" : "#fff" }}
             >
-              #{i + 1} {t.genre}
+              #{i + 1} {t(`genre.${r.genre}`)}
             </span>
           ))}
       </footer>

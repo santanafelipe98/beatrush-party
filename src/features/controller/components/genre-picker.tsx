@@ -5,6 +5,7 @@ import { GENRES, MAX_GENRE_PICKS, type Genre } from "@/features/game";
 import { useCountdown } from "@/features/realtime/client/hooks";
 import { Button, ProgressBar, TimerPill } from "@/components/ui";
 import { cn } from "@/lib/cn";
+import { useI18n } from "@/lib/i18n/provider";
 
 interface GenrePickerProps {
   voteEndsAt: number | null;
@@ -14,6 +15,7 @@ interface GenrePickerProps {
 }
 
 export function GenrePicker({ voteEndsAt, submitted, onSubmit }: GenrePickerProps) {
+  const { t } = useI18n();
   const [picks, setPicks] = useState<Genre[]>([]);
   const seconds = useCountdown(voteEndsAt);
   const locked = submitted !== null;
@@ -25,10 +27,10 @@ export function GenrePicker({ voteEndsAt, submitted, onSubmit }: GenrePickerProp
   return (
     <div className="mx-auto flex min-h-dvh w-full max-w-sm flex-col gap-3 px-5 pb-6 pt-10">
       <div className="flex items-center justify-between">
-        <h1 className="text-xl font-black">Escolha até {MAX_GENRE_PICKS}</h1>
+        <h1 className="text-xl font-black">{t("picker.title", { max: MAX_GENRE_PICKS })}</h1>
         <TimerPill seconds={seconds} className="text-base" />
       </div>
-      <ProgressBar label="tempo de votação" value={(seconds / 20) * 100} fillClassName="bg-gradient-to-r from-amber to-red" />
+      <ProgressBar label={t("vote.timeLabel")} value={(seconds / 20) * 100} fillClassName="bg-gradient-to-r from-amber to-red" />
 
       <div className="mt-1 grid grid-cols-2 gap-2.5">
         {GENRES.map((g) => {
@@ -46,7 +48,7 @@ export function GenrePicker({ voteEndsAt, submitted, onSubmit }: GenrePickerProp
                 locked && "opacity-80",
               )}
             >
-              {g}
+              {t(`genre.${g}`)}
               {on && <span className="absolute right-2 top-1.5 text-[11px]">✓</span>}
             </button>
           );
@@ -54,7 +56,7 @@ export function GenrePicker({ voteEndsAt, submitted, onSubmit }: GenrePickerProp
       </div>
 
       <p className="text-center text-xs font-bold text-muted">
-        {shown.length} de {MAX_GENRE_PICKS} selecionados
+        {t("picker.selected", { n: shown.length, max: MAX_GENRE_PICKS })}
       </p>
       <Button
         variant="accent"
@@ -62,7 +64,7 @@ export function GenrePicker({ voteEndsAt, submitted, onSubmit }: GenrePickerProp
         onClick={() => onSubmit(picks)}
         className="mt-auto font-black"
       >
-        {locked ? "Votos enviados ✓" : "Enviar Votos"}
+        {locked ? t("picker.sent") : t("picker.submit")}
       </Button>
     </div>
   );

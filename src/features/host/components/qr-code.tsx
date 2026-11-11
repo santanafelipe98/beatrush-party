@@ -1,8 +1,12 @@
+"use client";
+
 import QRCode from "qrcode";
 import { useMemo } from "react";
+import { useI18n } from "@/lib/i18n/provider";
 
 /** QR Code real (SVG), renderizado a partir da matriz de módulos. */
 export function QrCode({ value, size = 168 }: { value: string; size?: number }) {
+  const { t } = useI18n();
   const { count, dark } = useMemo(() => {
     const qr = QRCode.create(value, { errorCorrectionLevel: "M" });
     const n = qr.modules.size;
@@ -16,7 +20,7 @@ export function QrCode({ value, size = 168 }: { value: string; size?: number }) 
     <div className="rounded-2xl bg-white p-3">
       <svg
         role="img"
-        aria-label={`QR Code para ${value}`}
+        aria-label={t("qr.alt", { url: value })}
         width={size}
         height={size}
         viewBox={`0 0 ${count} ${count}`}
