@@ -83,3 +83,42 @@ describe("catálogo de fontes do Deezer", () => {
     ]);
   });
 });
+
+describe("Deezer getTrack (renovar link de preview)", () => {
+  const body = {
+    id: 3893226711,
+    title: "Peão",
+    preview: "https://cdn/preview-novo.mp3?hdnea=exp=999",
+    artist: { name: "Jeninho" },
+    album: { cover_medium: "https://cdn/capa.jpg" },
+  };
+
+  it("busca /track/{id} sem o prefixo e devolve o link atual", async () => {
+    const f = vi.fn<(url: string) => Promise<Response>>(async () => jsonResponse(body));
+    const track = await createDeezerProvider(f as never).getTrack!("deezer-3893226711");
+    expect(f).toHaveBeenCalledWith("https://api.deezer.com/track/3893226711");
+    expect(track).toEqual({
+      id: "deezer-3893226711",
+      title: "Peão",
+      artist: "Jeninho",
+      previewUrl: "https://cdn/preview-novo.mp3?hdnea=exp=999",
+      coverUrl: "https://cdn/capa.jpg",
+    });
+  });
+
+  it("ids de outros catálogos ou inválidos viram null sem chamar a API", async () => {
+    const f = vi.fn();
+    const p = createDeezerProvider(f as never);
+    expect(await p.getTrack!("mock-1-2")).toBeNull();
+    expect(await p.getTrack!("deezer-abc")).toBeNull();
+    expect(await p.getTrack!("deezer-1/../x")).toBeNull();
+    expect(f).not.toHaveBeenCalled();
+  });
+
+  it("faixa removida (200 com error) vira null; erro HTTP lança", async () => {
+    const gone = createDeezerProvider((async () => jsonResponse({ error: { code: 800 } })) as never);
+    expect(await gone.getTrack!("deezer-1")).toBeNull();
+    const down = createDeezerProvider((async () => jsonResponse({}, false, 503)) as never);
+    await expect(down.getTrack!("deezer-1")).rejects.toBeInstanceOf(MusicProviderError);
+  });
+});
