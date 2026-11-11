@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Equalizer, LanguageSwitcher } from "@/components/ui";
+import { DeezerLogo, Equalizer, LanguageSwitcher } from "@/components/ui";
 import { useI18n } from "@/lib/i18n/provider";
 
 export function HomeScreen() {
@@ -15,6 +15,7 @@ export function HomeScreen() {
         barClassName="rounded-t bg-gradient-to-b from-pink to-purple"
       />
 
+      <DeezerLogo height={36} className="absolute left-6 top-6" />
       <LanguageSwitcher className="absolute right-6 top-6" />
 
       <div className="relative flex flex-col items-center gap-2">

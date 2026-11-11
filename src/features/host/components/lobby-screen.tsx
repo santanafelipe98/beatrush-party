@@ -14,7 +14,7 @@ export function LobbyScreen({ view, joinUrl }: { view: RoomView; joinUrl: string
   const ready = view.players.filter((p) => p.connected).length >= MIN_PLAYERS;
 
   return (
-    <div className="grid min-h-dvh grid-cols-1 bg-bg lg:grid-cols-[minmax(320px,0.42fr)_1fr]">
+    <div className="grid min-h-[calc(100dvh-4rem)] grid-cols-1 bg-bg lg:grid-cols-[minmax(320px,0.42fr)_1fr]">
       <section className="flex flex-col items-center gap-3 border-b border-line bg-gradient-to-b from-[#1d0f33] to-surface p-8 lg:border-b-0 lg:border-r">
         <p className="text-sm font-bold tracking-[0.2em] text-muted">{t("lobby.code")}</p>
         <p
@@ -29,7 +29,7 @@ export function LobbyScreen({ view, joinUrl }: { view: RoomView; joinUrl: string
         </p>
       </section>
 
-      <section className="flex flex-col gap-4 p-8 pb-20">
+      <section className="flex flex-col gap-4 p-8">
         <div className="flex items-baseline justify-between">
           <h1 className="text-3xl font-extrabold">{t("lobby.players")}</h1>
           <p className="text-lg font-bold text-cyan">

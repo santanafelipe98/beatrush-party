@@ -6,6 +6,7 @@
 export const ptBR = {
   "app.tagline": "Adivinhe a música mais rápido que seus amigos",
   "language.label": "Idioma",
+  "brand.deezer": "Logotipo do Deezer",
 
   "home.create": "Criar Nova Sala",
   "home.join": "Já tenho um código — entrar no jogo",

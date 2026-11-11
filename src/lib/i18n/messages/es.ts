@@ -3,6 +3,7 @@ import type { Messages } from "./index";
 export const es: Messages = {
   "app.tagline": "Adivina la canción más rápido que tus amigos",
   "language.label": "Idioma",
+  "brand.deezer": "Logotipo de Deezer",
 
   "home.create": "Crear Nueva Sala",
   "home.join": "Ya tengo un código — unirme al juego",
