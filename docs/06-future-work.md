@@ -22,7 +22,3 @@ combinam com o gênero votado e qualidade irregular.
 - Testes: ampliar `music.test.ts` com respostas simuladas de chart/playlist e do fallback.
 - Os links de `preview` são assinados e expiram; continuar buscando as faixas ao montar a partida.
 
-## 2. Adaptador Spotify
-
-Hoje é só um esqueleto que lança erro. Ver ressalvas (`preview_url` descontinuado, possível
-necessidade do Web Playback SDK/Premium) em [04-music-providers.md](04-music-providers.md).

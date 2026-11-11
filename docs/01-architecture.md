@@ -52,7 +52,7 @@ features/music ─▶ game (apenas tipos)
 ```
 
 O domínio não conhece React, WebSocket nem provedores de música. Isso permite trocar Deezer por
-Spotify, ou o transporte por outro, sem tocar nas regras.
+outro provedor, ou o transporte por outro, sem tocar nas regras.
 
 ## Decisões
 
@@ -84,7 +84,7 @@ npm run verify       # lint + typecheck + unitários
 npm run test:e2e     # Playwright (sobe o servidor sozinho na porta 3100)
 ```
 
-Variáveis: `PORT`, `MUSIC_PROVIDER` (`deezer|spotify|mock`), `VOTE_MS`, `ROUND_MS`, `REVEAL_MS`,
+Variáveis: `PORT`, `MUSIC_PROVIDER` (`deezer|mock`), `VOTE_MS`, `ROUND_MS`, `REVEAL_MS`,
 `TOTAL_ROUNDS`. Para jogar com celulares reais, use o IP da máquina na rede local.
 
 ## Acesso pela rede local em desenvolvimento
