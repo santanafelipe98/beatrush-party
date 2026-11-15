@@ -5,6 +5,7 @@ Quiz musical multiplayer: a TV mostra e toca; os celulares respondem. Quem acert
 - **Next.js + Tailwind** · **WebSocket (`ws`)** · **Zustand** · **Zod**
 - Aviso legal "Sobre" no app (sem direitos das músicas, apenas consome o Deezer, uso não comercial)
 - Música via `MusicProvider` (Deezer, Mock para testes). O logo do Deezer (exigido pela API) está **desativado por ora**, aguardando resposta do Deezer sobre o uso da marca: religa com `NEXT_PUBLIC_DEEZER_BRANDING=on` (ver [docs/04-music-providers.md](docs/04-music-providers.md))
+- **Contagem 3-2-1** antes de cada música (`COUNTDOWN_MS`, padrão 3000 ms; ver [docs/05-game-rules.md](docs/05-game-rules.md))
 - **Idiomas:** pt-BR, inglês e espanhol (por aparelho; ver [docs/07-i18n.md](docs/07-i18n.md))
 
 ```bash

@@ -50,8 +50,11 @@ export interface Round {
   /** Sempre OPTION_COUNT opções; a posição define a forma exibida. */
   options: Pick<Track, "title" | "artist">[];
   correctIndex: number;
+  /** Instante (epoch ms) em que a música toca e as respostas abrem: o fim da contagem regressiva. */
   startedAt: number;
   durationMs: number;
+  /** Duração da contagem "3, 2, 1" que antecede `startedAt` (0 = rodada começa na hora). */
+  countdownMs: number;
   answers: Record<string, { choice: number; elapsedMs: number }>;
   results?: Record<string, RoundResult>;
 }
@@ -82,6 +85,7 @@ export type GameErrorCode =
   | "invalid_genres"
   | "invalid_choice"
   | "already_answered"
+  | "too_early"
   | "time_over";
 
 export class GameError extends Error {

@@ -1,5 +1,6 @@
 "use client";
 
+import { countdownStep } from "@/features/game";
 import type { RoomView } from "@/features/realtime/protocol";
 import { useCountdown } from "@/features/realtime/client/hooks";
 import { useI18n } from "@/lib/i18n/provider";
@@ -9,9 +10,38 @@ export function PlayingScreen({ view }: { view: RoomView }) {
   const { t } = useI18n();
   const round = view.round!;
   const seconds = useCountdown(round.startedAt + round.durationMs);
+  const toGo = useCountdown(round.startedAt); // segundos até o "valendo" (0 depois dele)
+  const step = round.countdownMs > 0 ? countdownStep(toGo * 1000, round.countdownMs) : null;
   const connected = view.players.filter((p) => p.connected);
   const answered = connected.filter((p) => round.answeredIds.includes(p.id)).length;
   const pct = Math.min(100, (seconds * 1000 * 100) / round.durationMs);
+
+  // Contagem 3-2-1: a pergunta e as opções ficam escondidas (ninguém lê antes da hora) e o áudio só toca no "valendo"
+  if (step !== null) {
+    return (
+      <div className="flex min-h-[calc(100dvh-4.5rem)] flex-col bg-[radial-gradient(ellipse_at_50%_0%,#2a0f4a,#0f0f12_70%)] p-8">
+        <header className="flex items-center justify-between">
+          <h1 className="text-2xl font-black">
+            {t("round.label", { n: round.index + 1 })}{" "}
+            <span className="font-bold text-muted">{t("round.of", { total: view.totalRounds })}</span>
+          </h1>
+        </header>
+        <div className="flex flex-1 flex-col items-center justify-center gap-2">
+          <p className="text-xl font-extrabold uppercase tracking-[0.3em] text-cyan sm:text-3xl">{t("play.getReady")}</p>
+          <div
+            key={step}
+            data-testid="tv-countdown"
+            data-step={step}
+            role="timer"
+            aria-label={t("play.startsIn", { n: step })}
+            className="text-brand animate-count-pop select-none text-[clamp(8rem,38vh,20rem)] font-black leading-none drop-shadow-[0_0_40px_#ff0080aa]"
+          >
+            {step}
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex min-h-[calc(100dvh-4.5rem)] flex-col gap-4 bg-[radial-gradient(ellipse_at_50%_0%,#2a0f4a,#0f0f12_70%)] p-8">

@@ -20,6 +20,7 @@ export function HostScreen() {
   const { t } = useI18n();
   const view = useGameStore((s) => s.view);
   const status = useGameStore((s) => s.status);
+  const clockOffset = useGameStore((s) => s.clockOffset);
   const [muted, setMuted] = useState(false);
 
   const joinUrl = view ? `${window.location.origin}/play?code=${view.code}` : "";
@@ -42,7 +43,14 @@ export function HostScreen() {
         )}
       </div>
 
-      {view && <HostAudio src={view.phase === "playing" ? view.round?.previewUrl : undefined} muted={muted} />}
+      {view && (
+        <HostAudio
+          src={view.phase === "playing" ? view.round?.previewUrl : undefined}
+          startAt={view.round?.startedAt}
+          clockOffset={clockOffset}
+          muted={muted}
+        />
+      )}
 
       {/* O logo do Deezer é obrigatório (API) e fica visível em TODAS as telas da TV, sem cobrir conteúdo. */}
       {/* sticky: continua visível na base da janela mesmo quando o conteúdo é mais alto que ela */}

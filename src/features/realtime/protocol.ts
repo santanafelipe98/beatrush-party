@@ -34,8 +34,11 @@ export interface PlayerView {
 export interface RoundView {
   index: number;
   options: { title: string; artist: string }[];
+  /** Quando a música toca e as respostas abrem (fim da contagem). */
   startedAt: number;
   durationMs: number;
+  /** Duração da contagem 3-2-1 que termina em `startedAt` (0 = sem contagem). */
+  countdownMs: number;
   answeredIds: string[];
   /** Somente Host: áudio da faixa em reprodução. */
   previewUrl?: string;

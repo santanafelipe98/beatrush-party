@@ -39,7 +39,7 @@ const fresh =
   (tag = "fresh"): Behavior =>
   async (id, n) => ({ id, title: "x", artist: "y", previewUrl: `${tag}-${n}-${id}`, coverUrl: `capa-${id}` });
 
-const OPTS = { totalRounds: 3, voteMs: 10_000, roundMs: 10_000, revealMs: 2_000, introMs: 100, rng: () => 0.4 };
+const OPTS = { totalRounds: 3, voteMs: 10_000, roundMs: 10_000, revealMs: 2_000, introMs: 100, countdownMs: 0, rng: () => 0.4 };
 
 describe("link de áudio renovado a cada rodada", () => {
   let store: MemoryRoomStore;

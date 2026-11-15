@@ -82,7 +82,7 @@ describe("AnswerPad", () => {
         index: 2,
         options: [],
         startedAt: Date.now(),
-        durationMs: 10_000,
+        durationMs: 10_000, countdownMs: 0,
         answeredIds: answer === null ? [] : ["a"],
       },
       you: { playerId: "a", votes: null, answer },
@@ -105,7 +105,7 @@ describe("AnswerPad", () => {
         index: 0,
         options: [],
         startedAt: 0,
-        durationMs: 10_000,
+        durationMs: 10_000, countdownMs: 0,
         answeredIds: [],
         reveal: {
           correctIndex: 1,
