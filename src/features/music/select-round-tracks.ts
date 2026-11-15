@@ -17,7 +17,8 @@ function shuffle<T>(items: T[], rng: () => number): T[] {
 
 /**
  * Sorteia `count` faixas (alternando entre os gêneros vencedores) e, para cada,
- * 3 distratores com título e artista diferentes.
+ * 3 distratores do MESMO gênero da faixa (com título diferente); só completa com outros gêneros se o
+ * catálogo daquele gênero for pequeno demais.
  */
 export async function selectRoundTracks(
   provider: MusicProvider,
@@ -37,7 +38,11 @@ export async function selectRoundTracks(
       return true;
     }),
   );
-  const all = queues.flat();
+  // Cópia do pool de cada gênero (as filas abaixo são consumidas) e o gênero de cada faixa.
+  const genrePools = queues.map((q) => [...q]);
+  const all = genrePools.flat();
+  const genreOf = new Map<string, number>();
+  genrePools.forEach((pool, gi) => pool.forEach((t) => genreOf.set(t.id, gi)));
 
   const picked: Track[] = [];
   for (let i = 0; picked.length < count && queues.some((q) => q.length); i++) {
@@ -47,11 +52,11 @@ export async function selectRoundTracks(
   if (picked.length < count || all.length < OPTION_COUNT)
     throw new Error("catálogo insuficiente para montar a partida");
 
-  return picked.map((track) => ({
-    track,
-    distractors: shuffle(
-      all.filter((t) => t.id !== track.id && t.title !== track.title),
-      rng,
-    ).slice(0, OPTION_COUNT - 1),
-  }));
+  return picked.map((track) => {
+    const eligible = (t: Track) => t.id !== track.id && t.title !== track.title;
+    // As alternativas seguem o gênero da faixa sorteada; só se faltarem, completa com os outros gêneros.
+    const same = shuffle(genrePools[genreOf.get(track.id) ?? 0].filter(eligible), rng);
+    const others = shuffle(all.filter((t) => eligible(t) && genreOf.get(t.id) !== genreOf.get(track.id)), rng);
+    return { track, distractors: [...same, ...others].slice(0, OPTION_COUNT - 1) };
+  });
 }

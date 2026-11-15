@@ -29,7 +29,9 @@ finished ◀──finishGame (última rodada)── reveal ──startRound (pr�
   - A renovação do link de áudio acontece **antes** de fixar o "valendo", então a busca nunca come a contagem.
   - Snapshots salvos antes da contagem existir (sem `countdownMs`) são lidos como "sem contagem".
 - **Rodada:** 4 opções (▲ vermelho, ◆ azul, ● amarelo, ■ verde). A posição da correta é sorteada em
-  `buildRound`. A resposta certa **nunca** é enviada ao controller antes da revelação.
+  `buildRound`. As 3 alternativas erradas são do **mesmo gênero** da música do turno
+  (`selectRoundTracks`); só se aquele gênero tiver faixas de menos o servidor completa com outros gêneros.
+  A resposta certa **nunca** é enviada ao controller antes da revelação.
 - **Pontuação** (`scoring.ts`): 1000 pts em t=0, decaindo linearmente até 300 ao fim do tempo.
   Erro ou sem resposta = 0 e zera a sequência (`streak`).
 - **Fim:** após `totalRounds` (padrão 12). Revanche por maioria simples dos conectados.
