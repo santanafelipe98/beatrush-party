@@ -4,7 +4,7 @@ Quiz musical multiplayer: a TV mostra e toca; os celulares respondem. Quem acert
 
 - **Next.js + Tailwind** · **WebSocket (`ws`)** · **Zustand** · **Zod**
 - Aviso legal "Sobre" no app (sem direitos das músicas, apenas consome o Deezer, uso não comercial)
-- Música via `MusicProvider` (Deezer, Mock para testes). O logo do Deezer, exigido pela API, aparece nas telas (ver [docs/04-music-providers.md](docs/04-music-providers.md))
+- Música via `MusicProvider` (Deezer, Mock para testes). O logo do Deezer (exigido pela API) está **desativado por ora**, aguardando resposta do Deezer sobre o uso da marca: religa com `NEXT_PUBLIC_DEEZER_BRANDING=on` (ver [docs/04-music-providers.md](docs/04-music-providers.md))
 - **Idiomas:** pt-BR, inglês e espanhol (por aparelho; ver [docs/07-i18n.md](docs/07-i18n.md))
 
 ```bash
@@ -12,7 +12,7 @@ npm install
 npm run dev            # http://localhost:3000
 ```
 
-> **Logo do Deezer:** o arquivo do logo **não** vem neste repositório (os termos do Brand Hub do Deezer não permitem redistribuí-lo; ver [NOTICE](NOTICE)). Sem ele o app mostra o texto "Powered by Deezer". Para publicar uma instância, obtenha o logo com o Deezer e coloque em `public/brand/deezer/Signatures-PoweredBy-DE.svg` (a pasta é ignorada pelo git).
+> **Logo do Deezer (desativado por padrão):** o arquivo do logo **não** vem neste repositório (os termos do Brand Hub do Deezer não permitem redistribuí-lo; ver [NOTICE](NOTICE)). Sem ele o app mostra o texto "Powered by Deezer". Para publicar uma instância, obtenha o logo com o Deezer e coloque em `public/brand/deezer/Signatures-PoweredBy-DE.svg` (a pasta é ignorada pelo git).
 
 1. Abra `http://localhost:3000` na TV/notebook e clique em **Criar Nova Sala**.
 2. No celular, escaneie o QR Code (ou abra `/play` e digite o código).

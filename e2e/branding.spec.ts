@@ -10,6 +10,14 @@ import { expect, test, type Page } from "@playwright/test";
 const HAS_ASSET = existsSync(path.join(process.cwd(), "public", "brand", "deezer", "Signatures-PoweredBy-DE.svg"));
 
 /**
+ * MODO: enquanto o Deezer não responde sobre o uso da marca, o app roda com a marca DESLIGADA (padrão)
+ * e os testes de logo ficam pulados. `npm run test:e2e:branding` liga a marca e roda a bateria completa.
+ */
+const BRANDING_ON = process.env.E2E_DEEZER_BRANDING === "on";
+const onTest = BRANDING_ON ? test : test.skip;
+const offTest = BRANDING_ON ? test.skip : test;
+
+/**
  * A API do Deezer exige "a clearly visible Deezer Logo" em todo app que a usa.
  * Aqui conferimos: carregou de verdade (não é imagem quebrada), tem tamanho legível e NÃO está
  * coberto por outro elemento.
@@ -51,7 +59,7 @@ async function expectDeezerLogo(page: Page, where: string) {
   expect(info.opacity).toBe("1");
 }
 
-test("logo na tela inicial, na entrada do celular e na TV", async ({ page }) => {
+onTest("logo na tela inicial, na entrada do celular e na TV", async ({ page }) => {
   await page.goto("/");
   await expectDeezerLogo(page, "tela inicial");
   await page.goto("/play");
@@ -61,7 +69,7 @@ test("logo na tela inicial, na entrada do celular e na TV", async ({ page }) => 
   await expectDeezerLogo(page, "TV (lobby)");
 });
 
-test("logo visível em todas as fases da TV", async ({ browser }) => {
+onTest("logo visível em todas as fases da TV", async ({ browser }) => {
   const tvCtx = await browser.newContext({ viewport: { width: 1280, height: 720 } });
   const aCtx = await browser.newContext({ viewport: { width: 390, height: 780 } });
   const bCtx = await browser.newContext({ viewport: { width: 390, height: 780 } });
@@ -107,7 +115,7 @@ test("logo visível em todas as fases da TV", async ({ browser }) => {
   await Promise.all([tvCtx.close(), aCtx.close(), bCtx.close()]);
 });
 
-test("logo também em telas pequenas e nos outros idiomas", async ({ browser }) => {
+onTest("logo também em telas pequenas e nos outros idiomas", async ({ browser }) => {
   for (const [locale, vp] of [["en-US", { width: 360, height: 640 }], ["es-ES", { width: 1920, height: 1080 }]] as const) {
     const ctx = await browser.newContext({ locale, viewport: vp });
     const page = await ctx.newPage();
@@ -121,7 +129,7 @@ test("logo também em telas pequenas e nos outros idiomas", async ({ browser }) 
 
 // Janelas baixas/estreitas (celular deitado, janela pequena, TV com zoom): o logo não pode ficar
 // escondido sob o título nem fora da tela exigindo rolagem.
-test("logo visível em janelas baixas", async ({ browser }) => {
+onTest("logo visível em janelas baixas", async ({ browser }) => {
   for (const vp of [
     { width: 640, height: 360 },
     { width: 568, height: 320 },
@@ -141,7 +149,7 @@ test("logo visível em janelas baixas", async ({ browser }) => {
 
 // A assinatura "Powered by Deezer" é larga (≈6,8:1): em telas estreitas ela não pode empurrar o
 // seletor de idioma para fora da tela nem sobrepô-lo.
-test("em telas estreitas o logo não esconde nem sobrepõe o seletor de idioma", async ({ browser }) => {
+onTest("em telas estreitas o logo não esconde nem sobrepõe o seletor de idioma", async ({ browser }) => {
   for (const vp of [
     { width: 320, height: 568 },
     { width: 360, height: 640 },
@@ -183,7 +191,7 @@ test("em telas estreitas o logo não esconde nem sobrepõe o seletor de idioma",
 });
 
 // Plano B: sem o arquivo do logo (clone do repositório, arquivo removido), nada de imagem quebrada.
-test("sem o arquivo do logo mostra o texto Powered by Deezer, sem imagem quebrada", async ({ page }) => {
+onTest("sem o arquivo do logo mostra o texto Powered by Deezer, sem imagem quebrada", async ({ page }) => {
   await page.route("**/brand/deezer/**", (route) => route.abort());
   await page.goto("/");
   const logo = page.getByTestId("deezer-logo");
@@ -197,4 +205,85 @@ test("sem o arquivo do logo mostra o texto Powered by Deezer, sem imagem quebrad
   await page.goto("/host");
   await expect(page.getByTestId("room-code")).toBeVisible();
   await expect(page.getByTestId("deezer-logo")).toHaveText("Powered by Deezer");
+});
+
+/* =========================== marca DESLIGADA (padrão) =========================== */
+
+offTest("marca desligada: nenhuma tela mostra logo nem 'Powered by Deezer'", async ({ page }) => {
+  const ausente = async (where: string) => {
+    await expect(page.getByTestId("deezer-logo"), where).toHaveCount(0);
+    await expect(page.locator('img[src*="brand/deezer"]'), where).toHaveCount(0);
+    await expect(page.getByText(/powered by/i), where).toHaveCount(0);
+  };
+  await page.goto("/");
+  await expect(page.getByRole("link", { name: "Criar Nova Sala" })).toBeVisible();
+  await ausente("tela inicial");
+
+  await page.goto("/play");
+  await expect(page.getByRole("button", { name: "Entrar no Jogo" })).toBeVisible();
+  await ausente("entrada do celular");
+
+  await page.goto("/host");
+  await expect(page.getByTestId("room-code")).toBeVisible();
+  await ausente("TV (lobby)");
+
+  // o aviso "Sobre" continua informando a origem, sem exibir a marca
+  await page.getByRole("button", { name: "Sobre", exact: true }).click();
+  await expect(page.getByRole("dialog")).toContainText("API do Deezer");
+  await ausente("TV com o aviso Sobre aberto");
+});
+
+offTest("marca desligada: nem o arquivo do logo é pedido ao servidor", async ({ page }) => {
+  const pedidos: string[] = [];
+  page.on("request", (r) => {
+    if (r.url().includes("/brand/deezer")) pedidos.push(r.url());
+  });
+  for (const url of ["/", "/play", "/host"]) {
+    await page.goto(url);
+    await page.waitForLoadState("networkidle");
+  }
+  expect(pedidos, "o arquivo do logo não deveria ser baixado").toEqual([]);
+});
+
+offTest("marca desligada: o layout continua bom sem o logo (idioma, Sobre e controles alcançáveis)", async ({ browser }) => {
+  const dentro = async (page: import("@playwright/test").Page, name: string | RegExp, at: string, vp: { width: number; height: number }) => {
+    const box = await page.getByRole("button", { name }).first().boundingBox();
+    expect(box, `${at}: botão ${String(name)} ausente`).not.toBeNull();
+    expect(box!.x, `${at}: ${String(name)} fora (esquerda)`).toBeGreaterThanOrEqual(0);
+    expect(box!.x + box!.width, `${at}: ${String(name)} fora (direita)`).toBeLessThanOrEqual(vp.width);
+    expect(box!.y + box!.height, `${at}: ${String(name)} fora (embaixo)`).toBeLessThanOrEqual(vp.height);
+  };
+
+  for (const vp of [
+    { width: 320, height: 568 },
+    { width: 390, height: 780 },
+  ]) {
+    const ctx = await browser.newContext({ viewport: vp });
+    const page = await ctx.newPage();
+    const at = `celular ${vp.width}px`;
+    await page.goto("/");
+    expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth), `home ${at}: rolagem horizontal`).toBeLessThanOrEqual(0);
+    for (const n of ["Português (Brasil)", "English", "Español"]) await dentro(page, n, `home ${at}`, vp);
+    const h1 = (await page.getByRole("heading", { name: "BEATRUSH" }).boundingBox())!;
+    expect(h1.x, `home ${at}: título cortado`).toBeGreaterThanOrEqual(0);
+    expect(h1.x + h1.width, `home ${at}: título cortado`).toBeLessThanOrEqual(vp.width);
+
+    await page.goto("/play");
+    await dentro(page, "English", `entrada ${at}`, { width: vp.width, height: 100000 }); // a página pode rolar na vertical
+    await ctx.close();
+  }
+
+  for (const vp of [
+    { width: 568, height: 320 },
+    { width: 800, height: 600 },
+    { width: 1280, height: 720 },
+  ]) {
+    const ctx = await browser.newContext({ viewport: vp });
+    const page = await ctx.newPage();
+    const at = `TV ${vp.width}x${vp.height}`;
+    await page.goto("/host");
+    await expect(page.getByTestId("room-code")).toBeVisible();
+    for (const n of [/^Sobre$/, "English", /^Som: (ON|OFF)$/]) await dentro(page, n, at, vp); // rodapé fixo na base
+    await ctx.close();
+  }
 });

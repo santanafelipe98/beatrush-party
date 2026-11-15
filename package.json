@@ -15,7 +15,8 @@
     "dev:next": "next dev",
     "redis:up": "docker compose up -d redis",
     "redis:down": "docker compose down",
-    "test:redis": "cross-env REDIS_URL=redis://localhost:6379 vitest run"
+    "test:redis": "cross-env REDIS_URL=redis://localhost:6379 vitest run",
+    "test:e2e:branding": "cross-env E2E_DEEZER_BRANDING=on playwright test"
   },
   "dependencies": {
     "ioredis": "^6.0.0",
