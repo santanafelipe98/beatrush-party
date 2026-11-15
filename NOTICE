@@ -15,6 +15,9 @@ diretrizes da API do Deezer exigem um logo claramente visível em todo app que a
 utiliza (https://developers.deezer.com/guidelines/logo), e o app o exibe a partir
 do caminho acima.
 
+STATUS: a exibição do logo está DESATIVADA por padrão (variável NEXT_PUBLIC_DEEZER_BRANDING=on a liga),
+aguardando resposta do Deezer sobre o uso da marca.
+
 O ARQUIVO DO LOGO NÃO É DISTRIBUÍDO COM ESTE CÓDIGO. Os Termos de Uso do Brand Hub
 do Deezer (https://deezerbrand.com/) só permitem baixar e usar os Brand Assets a
 quem recebeu acesso do Deezer e, mesmo assim, apenas para cumprir um acordo ou uma

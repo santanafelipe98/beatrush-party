@@ -49,6 +49,17 @@ Os links de `preview` do Deezer são **assinados e expiram em ~14 min**. Para nu
 
 ## Logo do Deezer (exigência da API)
 
+> ### ⚠️ Status atual: DESATIVADO (aguardando resposta do Deezer)
+> Enquanto o Deezer não responde sobre o uso da marca, **nenhuma tela mostra o logo nem o texto "Powered by Deezer"**
+> (o componente `DeezerLogo` não renderiza nada). Religar: `NEXT_PUBLIC_DEEZER_BRANDING=on` (no `.env.local` ou no ambiente de
+> build/start). Testar o modo ligado: `npm run test:e2e:branding`.
+>
+> **Consequência:** as diretrizes da API exigem um logo visível. Com a marca desligada o app **não cumpre** essa exigência,
+> então **não o publique abertamente** até haver autorização do Deezer e a marca estar ligada. O aviso "Sobre" continua informando
+> que o app consome o Deezer, sem exibir a marca.
+>
+> O restante desta seção descreve o comportamento **com a marca ligada**.
+
 As [diretrizes do Deezer](https://developers.deezer.com/guidelines/logo) exigem que todo app que usa a API
 "must have to include a clearly visible Deezer Logo" ("Deezer Logo must be clearly visible and identified").
 

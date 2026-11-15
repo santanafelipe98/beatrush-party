@@ -11,6 +11,8 @@ export default defineConfig({
       NEXT_DIST_DIR: ".next-e2e",
       PORT: "3100",
       MUSIC_PROVIDER: "mock",
+      // marca do Deezer: desligada por padrão; `npm run test:e2e:branding` liga (e roda os testes de logo)
+      NEXT_PUBLIC_DEEZER_BRANDING: process.env.E2E_DEEZER_BRANDING === "on" ? "on" : "",
       VOTE_MS: "15000",
       ROUND_MS: "15000",
       REVEAL_MS: "1500",

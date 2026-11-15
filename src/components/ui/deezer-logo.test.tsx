@@ -3,20 +3,66 @@ import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { execSync } from "node:child_process";
 import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { JoinForm } from "@/features/controller/components/join-form";
 import { HomeScreen } from "@/features/home/components/home-screen";
 import { I18nProvider } from "@/lib/i18n/provider";
 import type { Locale } from "@/lib/i18n/locales";
-import { DEEZER_LOGO_SRC, DeezerLogo } from "./deezer-logo";
+import { DEEZER_LOGO_SRC, DeezerLogo, isDeezerBrandingEnabled } from "./deezer-logo";
 
-afterEach(cleanup);
+afterEach(() => {
+  cleanup();
+  vi.unstubAllEnvs();
+});
 
 const wrap = (locale: Locale, ui: React.ReactNode) => render(<I18nProvider initialLocale={locale}>{ui}</I18nProvider>);
 const root = process.cwd();
 const file = path.join(root, "public", decodeURIComponent(DEEZER_LOGO_SRC));
 
-describe("DeezerLogo", () => {
+/**
+ * Enquanto o Deezer não responde sobre o uso da marca, o app NÃO mostra o logo nem o texto
+ * "Powered by Deezer" (padrão). Religa-se com NEXT_PUBLIC_DEEZER_BRANDING=on.
+ */
+describe("marca do Deezer DESATIVADA (padrão)", () => {
+  it("isDeezerBrandingEnabled só liga com o valor exato 'on'", () => {
+    expect(isDeezerBrandingEnabled()).toBe(false);
+    for (const v of ["", "true", "1", "ON", "yes", "off"]) {
+      vi.stubEnv("NEXT_PUBLIC_DEEZER_BRANDING", v);
+      expect(isDeezerBrandingEnabled(), `valor "${v}"`).toBe(false);
+    }
+    vi.stubEnv("NEXT_PUBLIC_DEEZER_BRANDING", "on");
+    expect(isDeezerBrandingEnabled()).toBe(true);
+  });
+
+  it("DeezerLogo não renderiza nada (nem imagem, nem texto)", () => {
+    const { container } = render(<DeezerLogo height={40} />);
+    expect(container.innerHTML).toBe("");
+    expect(screen.queryByTestId("deezer-logo")).toBeNull();
+    expect(screen.queryByText(/powered by/i)).toBeNull();
+  });
+
+  it("tela inicial e entrada do celular não mostram logo nem 'Powered by'", () => {
+    const home = render(<HomeScreen />);
+    expect(home.container.querySelector('[data-testid="deezer-logo"]')).toBeNull();
+    expect(home.container.querySelector('img[src*="brand/deezer"]')).toBeNull();
+    expect(screen.queryByText(/powered by/i)).toBeNull();
+    home.unmount();
+
+    const join = render(<JoinForm onSubmit={() => {}} />);
+    expect(join.container.querySelector('[data-testid="deezer-logo"]')).toBeNull();
+    expect(screen.queryByText(/powered by/i)).toBeNull();
+  });
+
+  it("o resto das telas continua funcionando (seletor de idioma e Sobre presentes)", () => {
+    render(<HomeScreen />);
+    expect(screen.getByRole("group", { name: "Idioma" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Sobre" })).toBeTruthy();
+  });
+});
+
+describe("marca do Deezer ATIVADA (NEXT_PUBLIC_DEEZER_BRANDING=on)", () => {
+  beforeEach(() => vi.stubEnv("NEXT_PUBLIC_DEEZER_BRANDING", "on"));
+
   it("aponta para o arquivo local sem recodificar e mantém a proporção", () => {
     render(<DeezerLogo height={40} />);
     const img = screen.getByRole("img", { name: /deezer/i }) as HTMLImageElement;
@@ -42,14 +88,11 @@ describe("DeezerLogo", () => {
     expect(fallback.textContent).toBe("Powered by Deezer");
     expect(fallback.style.height).toBe("36px");
   });
-});
 
-describe("presença do logo nas telas (exigência da API do Deezer)", () => {
-  it("tela inicial", () => {
-    render(<HomeScreen />);
+  it("aparece na tela inicial e na entrada do celular", () => {
+    const home = render(<HomeScreen />);
     expect(screen.getByTestId("deezer-logo")).toBeTruthy();
-  });
-  it("formulário de entrada do celular", () => {
+    home.unmount();
     render(<JoinForm onSubmit={() => {}} />);
     expect(screen.getByTestId("deezer-logo")).toBeTruthy();
   });
