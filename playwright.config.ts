@@ -17,6 +17,7 @@ export default defineConfig({
       ROUND_MS: "15000",
       REVEAL_MS: "1500",
       TOTAL_ROUNDS: "2",
+      COUNTDOWN_MS: "1500", // contagem curta nos testes (3-2-1 de 0,5 s)
     },
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,

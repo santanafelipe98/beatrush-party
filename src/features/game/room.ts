@@ -14,6 +14,9 @@ import {
   type Track,
 } from "./types";
 
+/** Folga para uma resposta que chega um instante antes do "valendo" por diferença de relógio/latência. */
+export const EARLY_GRACE_MS = 250;
+
 export function createRoom(code: string, totalRounds = 12): Room {
   return {
     code,
@@ -146,6 +149,7 @@ export function buildRound(
   startedAt: number,
   durationMs: number,
   rng: () => number = Math.random,
+  countdownMs = 0,
 ): Round {
   if (distractors.length < OPTION_COUNT - 1) throw new GameError("invalid_choice");
   const options = [track, ...distractors.slice(0, OPTION_COUNT - 1)].map(
@@ -164,6 +168,7 @@ export function buildRound(
     correctIndex: order.indexOf(0),
     startedAt,
     durationMs,
+    countdownMs,
     answers: {},
   };
 }
@@ -186,6 +191,8 @@ export function submitAnswer(
     throw new GameError("invalid_choice");
   if (round.answers[id]) throw new GameError("already_answered");
   const elapsedMs = now - round.startedAt;
+  // durante a contagem as respostas ainda não abriram (a tolerância cobre a latência do celular)
+  if (elapsedMs < -EARLY_GRACE_MS) throw new GameError("too_early");
   if (elapsedMs > round.durationMs) throw new GameError("time_over");
   return {
     ...room,

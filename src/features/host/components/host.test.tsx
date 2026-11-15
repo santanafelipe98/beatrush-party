@@ -79,7 +79,7 @@ describe("telas do Host", () => {
         index: 2,
         options: ["A", "B", "C", "D"].map((t) => ({ title: `Song ${t}`, artist: "Art" })),
         startedAt: Date.now(),
-        durationMs: 10_000,
+        durationMs: 10_000, countdownMs: 0,
         answeredIds: ["a"],
       },
     };
@@ -97,7 +97,7 @@ describe("telas do Host", () => {
         index: 0,
         options: [],
         startedAt: 0,
-        durationMs: 10_000,
+        durationMs: 10_000, countdownMs: 0,
         answeredIds: ["a"],
         reveal: {
           correctIndex: 1,
@@ -124,7 +124,7 @@ describe("telas do Host", () => {
         index: 0,
         options: [],
         startedAt: 0,
-        durationMs: 1,
+        durationMs: 1, countdownMs: 0,
         answeredIds: [],
         reveal: { correctIndex: 0, title: "T", artist: "A", results: {} },
       },

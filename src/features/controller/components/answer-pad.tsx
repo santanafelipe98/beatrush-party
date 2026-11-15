@@ -1,5 +1,6 @@
 "use client";
 
+import { countdownStep } from "@/features/game";
 import type { RoomView } from "@/features/realtime/protocol";
 import { useCountdown } from "@/features/realtime/client/hooks";
 import { Avatar, ProgressBar, SHAPES, ShapeIcon } from "@/components/ui";
@@ -22,8 +23,12 @@ export function AnswerPad({ view, playerId, onAnswer }: AnswerPadProps) {
   const seconds = useCountdown(round.startedAt + round.durationMs);
   const playing = view.phase === "playing";
   const answered = chosen !== null;
+  const toGo = useCountdown(round.startedAt); // segundos até o "valendo"
+  const step = playing && round.countdownMs > 0 ? countdownStep(toGo * 1000, round.countdownMs) : null;
+  const counting = step !== null; // contagem 3-2-1: respostas ainda fechadas
 
   let feedback = { title: t("play.question"), detail: t("pad.hint"), tone: "neutral" };
+  if (counting) feedback = { title: t("pad.getReady"), detail: t("pad.getReadyHint"), tone: "neutral" };
   if (playing && answered) feedback = { title: t("pad.sent"), detail: t("pad.waitOthers"), tone: "wait" };
   if (reveal && result?.correct)
     feedback = {
@@ -69,11 +74,29 @@ export function AnswerPad({ view, playerId, onAnswer }: AnswerPadProps) {
         <span>
           {t("round.short", { n: round.index + 1, total: view.totalRounds })}
         </span>
-        <span>{playing ? `0:${String(Math.ceil(seconds)).padStart(2, "0")}` : t("pad.reveal")}</span>
+        <span>
+          {counting
+            ? `0:${String(Math.ceil(round.durationMs / 1000)).padStart(2, "0")}`
+            : playing
+              ? `0:${String(Math.ceil(seconds)).padStart(2, "0")}`
+              : t("pad.reveal")}
+        </span>
       </div>
-      <ProgressBar label={t("pad.timeLabel")} value={playing ? (seconds * 1000 * 100) / round.durationMs : 100} fillClassName={playing ? "bg-cyan" : "bg-muted"} />
+      <ProgressBar label={t("pad.timeLabel")} value={playing && !counting ? (seconds * 1000 * 100) / round.durationMs : 100} fillClassName={playing ? "bg-cyan" : "bg-muted"} />
 
-      <div className="grid flex-1 grid-cols-2 gap-3">
+      <div className="relative grid flex-1 grid-cols-2 gap-3">
+        {counting && (
+          <div
+            key={step}
+            data-testid="pad-countdown"
+            data-step={step}
+            role="timer"
+            aria-label={t("play.startsIn", { n: step })}
+            className="text-brand animate-count-pop pointer-events-none absolute inset-0 z-10 flex select-none items-center justify-center text-[9rem] font-black leading-none drop-shadow-[0_0_30px_#ff0080aa]"
+          >
+            {step}
+          </div>
+        )}
         {SHAPES.map((shape, i) => {
           const isChosen = chosen === i;
           const isCorrect = reveal?.correctIndex === i;
@@ -85,14 +108,14 @@ export function AnswerPad({ view, playerId, onAnswer }: AnswerPadProps) {
               data-testid={`answer-${i}`}
               aria-label={t(shape.key)}
               aria-pressed={isChosen}
-              disabled={!playing || answered}
+              disabled={!playing || answered || counting}
               onClick={() => {
                 navigator.vibrate?.(30);
                 onAnswer(i);
               }}
               className={cn(
                 "flex items-center justify-center rounded-3xl outline-offset-[3px] transition active:scale-95",
-                dim ? "opacity-20" : "opacity-100",
+                dim ? "opacity-20" : counting ? "opacity-30" : "opacity-100",
                 isChosen && !reveal && "outline-4 outline-white",
                 reveal && isCorrect && "shadow-[0_0_30px_#10B981] outline-4 outline-green",
                 reveal && isChosen && !isCorrect && "outline-4 outline-red",

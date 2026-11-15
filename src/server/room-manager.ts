@@ -2,6 +2,7 @@ import {
   GameError,
   allAnswered,
   allVoted,
+  DEFAULT_COUNTDOWN_MS,
   buildRound,
   closeGenreVote,
   closeRound,
@@ -59,6 +60,8 @@ export interface ManagerOptions {
   totalRounds?: number;
   /** Atraso entre o fim da votação e a primeira música. */
   introMs?: number;
+  /** Contagem regressiva "3, 2, 1" antes de cada música (0 = desligada). */
+  countdownMs?: number;
   /** Tempo sem nenhuma conexão até a sala ser removida da memória e do store. */
   idleMs?: number;
   /** Tempo máximo para renovar o link de áudio no início de uma rodada (depois, usa o link já conhecido). */
@@ -108,6 +111,7 @@ export class RoomManager {
       revealMs: 5_000,
       totalRounds: 12,
       introMs: 1_500,
+      countdownMs: DEFAULT_COUNTDOWN_MS,
       idleMs: 30 * 60_000,
       previewRefreshMs: 2_500,
     };
@@ -344,16 +348,19 @@ export class RoomManager {
       const track = await this.freshTrack(next.track);
       if (this.rooms.get(rt.room.code) !== rt || rt.queue[0] !== next) return; // sala removida / fila mudou
       rt.queue.shift();
+      // `startedAt` é o "valendo": depois da contagem (e da renovação do link, que já terminou aqui)
+      const { countdownMs } = this.opts;
       const round = buildRound(
         rt.room.roundsPlayed,
         track,
         next.distractors,
-        this.opts.now(),
+        this.opts.now() + countdownMs,
         this.opts.roundMs,
         this.opts.rng,
+        countdownMs,
       );
       rt.room = startRound(rt.room, round);
-      this.arm(rt, "endRound", this.opts.roundMs);
+      this.arm(rt, "endRound", countdownMs + this.opts.roundMs);
       this.commit(rt);
     } catch (e) {
       console.error(`[game] não foi possível iniciar a rodada na sala ${rt.room.code}:`, e);

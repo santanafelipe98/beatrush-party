@@ -31,6 +31,7 @@ describe.skipIf(!process.env.REDIS_URL)("reinício com Redis e WebSocket reais",
       roundMs: 60_000,
       revealMs: 60_000,
       introMs: 50,
+      countdownMs: 0,
     });
     const restored = await manager.restore();
     const server: Server = createServer();

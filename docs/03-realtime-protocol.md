@@ -44,6 +44,12 @@ Servidor → cliente: `host:created`, `error {code}`, e `state {view}` — **o e
 (snapshot) a cada mudança. Snapshots em vez de eventos incrementais simplificam reconexão e
 eliminam divergência; o payload é minúsculo (≤ 8 jogadores).
 
+## Contagem regressiva
+
+`RoundView.startedAt` é o instante do "valendo" (fim da contagem de `RoundView.countdownMs`). Enquanto `serverNow < startedAt` os clientes
+mostram 3-2-1 e travam as respostas; o servidor também as recusa (`error { code: "too_early" }`, com folga de 250 ms). O `previewUrl` já vai
+para a TV durante a contagem para o áudio ser pré-carregado, e a TV só dá play em `startedAt`.
+
 ## Segurança de informação (`projectRoom`)
 
 - `correctIndex`, título e artista da faixa só aparecem na fase `reveal`.

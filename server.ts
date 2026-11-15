@@ -31,6 +31,7 @@ async function main() {
     roundMs: num(process.env.ROUND_MS),
     revealMs: num(process.env.REVEAL_MS),
     totalRounds: num(process.env.TOTAL_ROUNDS),
+    countdownMs: num(process.env.COUNTDOWN_MS),
     idleMs: num(process.env.ROOM_IDLE_MS),
   });
   const restored = await manager.restore();

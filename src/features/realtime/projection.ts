@@ -15,6 +15,8 @@ export function projectRoom(room: Room, viewer: Viewer, now: number): RoomView {
       options: r.options,
       startedAt: r.startedAt,
       durationMs: r.durationMs,
+      // snapshots salvos antes da contagem existir não têm o campo
+      countdownMs: r.countdownMs ?? 0,
       answeredIds: Object.keys(r.answers),
     };
     if (viewer.role === "display" && room.phase === "playing") round.previewUrl = r.track.previewUrl;

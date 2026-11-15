@@ -20,7 +20,7 @@ class FakeConn implements Connection {
   }
 }
 
-const OPTS = { totalRounds: 3, voteMs: 10_000, roundMs: 10_000, revealMs: 2_000, introMs: 100, rng: () => 0.4 };
+const OPTS = { totalRounds: 3, voteMs: 10_000, roundMs: 10_000, revealMs: 2_000, introMs: 100, countdownMs: 0, rng: () => 0.4 };
 
 describe("reinício do servidor (restauração a partir do store)", () => {
   let store: MemoryRoomStore;

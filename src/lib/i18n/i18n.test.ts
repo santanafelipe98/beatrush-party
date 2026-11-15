@@ -50,7 +50,7 @@ describe("dicionários", () => {
 
   it("todo gênero do jogo e todo erro do servidor tem tradução", () => {
     for (const g of GENRES) expect(keys).toContain(`genre.${g}`);
-    for (const code of ["room_not_found", "room_full", "name_taken", "wrong_phase", "not_host", "time_over"])
+    for (const code of ["room_not_found", "room_full", "name_taken", "wrong_phase", "not_host", "time_over", "too_early"])
       expect(keys).toContain(`error.${code}`);
   });
 });

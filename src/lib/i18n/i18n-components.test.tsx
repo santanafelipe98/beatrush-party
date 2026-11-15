@@ -79,7 +79,7 @@ describe("telas em outros idiomas", () => {
     const v = view({
       phase: "reveal",
       round: {
-        index: 0, options: [], startedAt: 0, durationMs: 10_000, answeredIds: ["a"],
+        index: 0, options: [], startedAt: 0, durationMs: 10_000, countdownMs: 0, answeredIds: ["a"],
         reveal: { correctIndex: 0, title: "T", artist: "A", results: { a: { correct: true, points: 980, elapsedMs: 1200 } } },
       },
     });

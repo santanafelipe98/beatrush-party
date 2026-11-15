@@ -35,6 +35,7 @@ describe("RoomManager", () => {
       roundMs: 1000,
       revealMs: 500,
       introMs: 100,
+      countdownMs: 0,
       rng: () => 0.4,
     });
     tv = new FakeConn();
@@ -158,6 +159,7 @@ describe("RoomManager", () => {
       fallbackMusic: createMockProvider(),
       totalRounds: 2,
       introMs: 10,
+      countdownMs: 0,
       rng: () => 0.4,
     });
     const t = new FakeConn(), a = new FakeConn(), b = new FakeConn();

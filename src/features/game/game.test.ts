@@ -1,11 +1,13 @@
 import { describe, expect, it } from "vitest";
 import {
+  EARLY_GRACE_MS,
   GameError,
   allAnswered,
   allVoted,
   buildRound,
   closeGenreVote,
   closeRound,
+  countdownStep,
   createRoom,
   finishGame,
   isLastRound,
@@ -166,5 +168,58 @@ describe("rodada", () => {
     r = submitAnswer(r, "b", r.round!.correctIndex, 1500);
     r = closeRound(r);
     expect(ranking(r).map((p) => p.id)).toEqual(["b", "a"]);
+  });
+});
+
+describe("contagem regressiva antes da música", () => {
+  const voting = () => startGenreVote(lobby(), "a", 0, 1);
+  const withCountdown = (countdownMs: number) => {
+    const round = buildRound(0, track(1), distractors, 4000, 10_000, () => 0, countdownMs);
+    return startRound(closeGenreVote(voting()), round);
+  };
+
+  it("buildRound guarda a duração da contagem (0 por padrão, como antes)", () => {
+    expect(buildRound(0, track(1), distractors, 1000, 10_000, () => 0).countdownMs).toBe(0);
+    expect(withCountdown(3000).round).toMatchObject({ startedAt: 4000, countdownMs: 3000 });
+  });
+
+  it("recusa resposta durante a contagem, mas tolera uma folga mínima de latência", () => {
+    const r = withCountdown(3000); // "valendo" em t=4000
+    expectCode(() => submitAnswer(r, "a", 1, 1000), "too_early");
+    expectCode(() => submitAnswer(r, "a", 1, 4000 - EARLY_GRACE_MS - 1), "too_early");
+    const ok = submitAnswer(r, "a", 1, 4000 - EARLY_GRACE_MS);
+    expect(ok.round!.answers.a).toEqual({ choice: 1, elapsedMs: 0 }); // vale como resposta imediata, nunca negativa
+  });
+
+  it("o tempo de resposta e o limite contam a partir do 'valendo', não do início da contagem", () => {
+    const r = withCountdown(3000);
+    const answered = submitAnswer(r, "a", r.round!.correctIndex, 4000 + 1000);
+    expect(answered.round!.answers.a.elapsedMs).toBe(1000);
+    expect(closeRound(answered).players[0].score).toBe(930); // 1s de 10s, como sem contagem
+    expectCode(() => submitAnswer(r, "b", 0, 4000 + 10_000 + 1), "time_over");
+    expect(() => submitAnswer(r, "b", 0, 4000 + 10_000)).not.toThrow();
+  });
+
+  it("sem contagem (0) o comportamento é o de antes", () => {
+    const r = withCountdown(0);
+    expect(() => submitAnswer(r, "a", 0, 4000)).not.toThrow();
+    expectCode(() => submitAnswer(r, "b", 0, 4000 - EARLY_GRACE_MS - 1), "too_early");
+  });
+});
+
+describe("countdownStep", () => {
+  it("divide a contagem em 3, 2, 1 de tempos iguais", () => {
+    expect([3000, 2500, 2001].map((ms) => countdownStep(ms, 3000))).toEqual([3, 3, 3]);
+    expect([2000, 1500, 1001].map((ms) => countdownStep(ms, 3000))).toEqual([2, 2, 2]);
+    expect([1000, 500, 1].map((ms) => countdownStep(ms, 3000))).toEqual([1, 1, 1]);
+  });
+  it("acabou ou sem contagem = null", () => {
+    expect(countdownStep(0, 3000)).toBeNull();
+    expect(countdownStep(-50, 3000)).toBeNull();
+    expect(countdownStep(1000, 0)).toBeNull();
+  });
+  it("funciona com tempos menores (ex.: testes) e nunca passa de 3", () => {
+    expect([1500, 1000, 500].map((ms) => countdownStep(ms, 1500))).toEqual([3, 2, 1]);
+    expect(countdownStep(9000, 3000)).toBe(3);
   });
 });
