@@ -55,6 +55,21 @@ describe("selectRoundTracks", () => {
       expect(new Set(r.distractors.map((d) => d.title)).size).toBe(3);
     }
   });
+  it("as 3 alternativas seguem o gênero da música do turno", async () => {
+    const genreOfId = (id: string) => id.split("-")[1];
+    const rounds = await selectRoundTracks(createMockProvider(), ["Pop", "Rock", "Funk"], 12, () => 0.3);
+    for (const r of rounds)
+      for (const d of r.distractors) expect(genreOfId(d.id), `${r.track.id} x ${d.id}`).toBe(genreOfId(r.track.id));
+  });
+  it("completa com outros gêneros apenas se o gênero tiver poucas faixas", async () => {
+    const mk = (g: string, n: number) => Array.from({ length: n }, (_, i) => ({ id: `${g}-${i}`, title: `${g}${i}`, artist: "A" }));
+    const uneven = { id: "u", getTracksByGenre: async (g: string) => (g === "Pop" ? mk("pop", 2) : mk("rock", 30)) };
+    const rounds = await selectRoundTracks(uneven as never, ["Pop", "Rock"], 4, () => 0.3);
+    for (const r of rounds) {
+      expect(r.distractors).toHaveLength(3);
+      if (r.track.id.startsWith("rock")) expect(r.distractors.every((d) => d.id.startsWith("rock"))).toBe(true);
+    }
+  });
   it("falha quando o catálogo é pequeno demais", async () => {
     const tiny = { id: "t", getTracksByGenre: async () => [] };
     await expect(selectRoundTracks(tiny, ["Pop"], 3)).rejects.toThrow("catálogo insuficiente");
