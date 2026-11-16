@@ -10,6 +10,8 @@ export * from "./redis-stores";
 export interface Persistence {
   kind: "redis" | "memory";
   roomStore: RoomStore;
+  /** Sonda a conexão (healthcheck). Só existe com Redis; rejeita se ele não responde. */
+  ping?(): Promise<void>;
   close(): Promise<void>;
 }
 
@@ -61,6 +63,7 @@ export async function createPersistence(env: Record<string, string | undefined> 
   return {
     kind: "redis",
     roomStore: new RedisRoomStore(client, { prefix, roomTtlSeconds, log: warn }),
+    ping: async () => void (await redis.ping()),
     close: async () => {
       await redis.quit().catch(() => redis.disconnect());
     },
