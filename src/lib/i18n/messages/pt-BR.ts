@@ -16,6 +16,12 @@ export const ptBR = {
   "about.trademark": "Deezer e o logotipo do Deezer são marcas de seus respectivos titulares. O BeatRush Party não é afiliado, patrocinado nem endossado pelo Deezer.",
   "about.nonCommercial": "Uso exclusivamente para fins não comerciais.",
   "about.close": "Fechar",
+  "about.privacy": "Se você aceitar, usamos o Google Analytics (cookies e identificadores) para medir o uso do app. Nada é carregado antes do seu aceite, e você pode mudar de ideia quando quiser.",
+  "about.privacyManage": "Preferências de privacidade",
+  "consent.label": "Aviso de privacidade",
+  "consent.text": "Usamos o Google Analytics, com cookies e identificadores, para entender como o jogo é usado. Só ativa se você aceitar, e você pode mudar depois em Sobre.",
+  "consent.accept": "Aceitar",
+  "consent.reject": "Recusar",
 
   "home.create": "Criar Nova Sala",
   "home.join": "Já tenho um código — entrar no jogo",

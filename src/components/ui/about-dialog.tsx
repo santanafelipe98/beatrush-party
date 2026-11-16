@@ -1,6 +1,8 @@
 "use client";
 
 import { useId, useRef } from "react";
+import { useAnalyticsEnabled } from "@/components/analytics/analytics-provider";
+import { resetConsent } from "@/components/analytics/consent";
 import { useI18n } from "@/lib/i18n/provider";
 import { cn } from "@/lib/cn";
 
@@ -16,6 +18,7 @@ export function AboutDialog({ className }: { className?: string }) {
   const { t } = useI18n();
   const ref = useRef<HTMLDialogElement>(null);
   const titleId = useId();
+  const analytics = useAnalyticsEnabled();
 
   return (
     <>
@@ -57,6 +60,22 @@ export function AboutDialog({ className }: { className?: string }) {
           <p className="rounded-xl border border-amber bg-amber/10 px-4 py-3 text-sm font-extrabold text-amber">
             {t("about.nonCommercial")}
           </p>
+          {analytics && (
+            <div className="flex flex-col items-start gap-2 text-sm leading-relaxed text-soft">
+              <p>{t("about.privacy")}</p>
+              <button
+                type="button"
+                data-testid="privacy-prefs"
+                onClick={() => {
+                  ref.current?.close();
+                  resetConsent(); // o banner volta para a pessoa escolher de novo
+                }}
+                className="font-extrabold text-white underline underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+              >
+                {t("about.privacyManage")}
+              </button>
+            </div>
+          )}
           <button
             type="button"
             autoFocus

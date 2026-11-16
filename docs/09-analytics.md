@@ -21,9 +21,31 @@ GA_MEASUREMENT_ID=G-XXXXXXXXXX npm start
 Código: `src/components/analytics/google-analytics.tsx` (`parseGaId`, `GoogleAnalytics`), montado em `src/app/layout.tsx`.
 Testes: `google-analytics.test.tsx`.
 
-## Privacidade (atenção antes de publicar)
+## Consentimento (LGPD/GDPR)
 
-O GA usa cookies e identificadores. Em produção para o público do Brasil/UE, a LGPD/GDPR normalmente exige
-**aviso e consentimento** antes de carregar o script. Hoje o app **não tem banner de consentimento**: com o ID
-definido, o GA carrega para todos. Ver `06-future-work.md` (banner de consentimento) e mencionar o Analytics na
-tela "Sobre"/política de privacidade.
+O GA **só é carregado depois do aceite**. Na primeira visita aparece um banner (TV e celular) com **Aceitar** e
+**Recusar** com o mesmo destaque; até a escolha, nenhum script nem requisição ao Google acontece.
+
+| Situação | Comportamento |
+| --- | --- |
+| Sem `GA_MEASUREMENT_ID` | nenhum banner, script ou menção a Analytics (nem no "Sobre") |
+| Primeira visita | banner; GA desligado (`ga-disable-<ID>` = true) |
+| Aceitar | carrega `gtag.js`; escolha guardada em `localStorage` (`beatrush-consent`) |
+| Recusar | nada carrega; cookies `_ga`, `_ga_*`, `_gid` são apagados; o banner não volta |
+| Mudar de ideia | "Sobre" → **Preferências de privacidade** apaga a escolha e reabre o banner; ao recusar, o envio é desligado e os cookies apagados |
+| `localStorage` bloqueado | a escolha vale na sessão (espelho em memória); nada quebra |
+
+Detalhes de implementação:
+- `consent.ts`: store externo (`useSyncExternalStore`), sincroniza abas via evento `storage`. No servidor/hidratação o estado é
+  `unknown` e **nada é renderizado**, então quem já escolheu não vê o banner "piscar".
+- `consent-banner.tsx`: fixo acima do rodapé da TV; **reserva o espaço no fim da página** (`padding-bottom` no body) para que, no
+  celular pequeno, o conteúdo (ex.: "Entrar no Jogo") possa rolar para cima dele em vez de ficar coberto.
+- `google-analytics.tsx`: só monta os `<Script>` com consentimento `granted`.
+- Textos em pt-BR/en/es.
+
+Limites: o consentimento fica **por navegador** (não por conta). Um script já carregado não é descarregado ao revogar:
+a página passa a não enviar mais dados (`ga-disable`) e, na próxima visita, o script nem carrega.
+Não é aconselhamento jurídico: revise o texto e a política de privacidade antes de publicar.
+
+Testes: `consent.test.tsx` (unidade), `e2e/analytics.spec.ts` via `npm run test:e2e:analytics` (liga o GA com um ID fictício e
+intercepta as requisições ao Google).
