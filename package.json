@@ -16,7 +16,8 @@
     "redis:up": "docker compose up -d redis",
     "redis:down": "docker compose down",
     "test:redis": "cross-env REDIS_URL=redis://localhost:6379 vitest run",
-    "test:e2e:branding": "cross-env E2E_DEEZER_BRANDING=on playwright test"
+    "test:e2e:branding": "cross-env E2E_DEEZER_BRANDING=on playwright test",
+    "test:e2e:analytics": "cross-env E2E_GA=on playwright test e2e/analytics.spec.ts"
   },
   "dependencies": {
     "ioredis": "^6.0.0",

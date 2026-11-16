@@ -13,6 +13,12 @@ export const es: Messages = {
   "about.trademark": "Deezer y el logotipo de Deezer son marcas de sus respectivos titulares. BeatRush Party no está afiliada, patrocinada ni respaldada por Deezer.",
   "about.nonCommercial": "Uso exclusivamente no comercial.",
   "about.close": "Cerrar",
+  "about.privacy": "Si aceptas, usamos Google Analytics (cookies e identificadores) para medir el uso de la app. No se carga nada antes de tu aceptación, y puedes cambiar de opinión cuando quieras.",
+  "about.privacyManage": "Preferencias de privacidad",
+  "consent.label": "Aviso de privacidad",
+  "consent.text": "Usamos Google Analytics, con cookies e identificadores, para entender cómo se usa el juego. Solo se activa si aceptas, y puedes cambiarlo después en Acerca de.",
+  "consent.accept": "Aceptar",
+  "consent.reject": "Rechazar",
 
   "home.create": "Crear Nueva Sala",
   "home.join": "Ya tengo un código — unirme al juego",

@@ -13,6 +13,8 @@ export default defineConfig({
       MUSIC_PROVIDER: "mock",
       // marca do Deezer: desligada por padrão; `npm run test:e2e:branding` liga (e roda os testes de logo)
       NEXT_PUBLIC_DEEZER_BRANDING: process.env.E2E_DEEZER_BRANDING === "on" ? "on" : "",
+      // Google Analytics: desligado por padrão; `npm run test:e2e:analytics` liga com um ID fictício
+      GA_MEASUREMENT_ID: process.env.E2E_GA === "on" ? "G-E2ETEST123" : "",
       VOTE_MS: "15000",
       ROUND_MS: "15000",
       REVEAL_MS: "1500",
