@@ -53,7 +53,7 @@ describe("telas do Host", () => {
     expect(screen.getByText(/mín. 2/)).toBeTruthy();
   });
 
-  it("votação exibe porcentagens e top 3", () => {
+  it("votação exibe porcentagens e os gêneros escolhidos", () => {
     const view: RoomView = {
       ...base,
       phase: "genre-vote",
@@ -68,7 +68,7 @@ describe("telas do Host", () => {
     render(<GenreVoteScreen view={view} />);
     expect(screen.getByText("VOTOS 1/2")).toBeTruthy();
     expect(screen.getByText("100%")).toBeTruthy();
-    expect(screen.getByText("#1 Pop", { selector: "span.rounded-full" })).toBeTruthy();
+    expect(screen.getByText("Pop ×2", { selector: "span.rounded-full" })).toBeTruthy();
   });
 
   it("rodada mostra 4 opções e quantos já responderam", () => {

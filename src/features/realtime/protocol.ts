@@ -13,7 +13,7 @@ export const clientMessageSchema = z.discriminatedUnion("type", [
     avatar: z.number().int().min(0).max(9),
   }),
   z.object({ type: z.literal("player:start") }),
-  z.object({ type: z.literal("player:vote"), genres: z.array(z.enum(GENRES)).max(3) }),
+  z.object({ type: z.literal("player:vote"), genres: z.array(z.enum(GENRES)).max(1) }),
   z.object({ type: z.literal("player:answer"), choice: z.number().int().min(0).max(3) }),
   z.object({ type: z.literal("player:replay") }),
 ]);

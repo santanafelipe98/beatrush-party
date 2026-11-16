@@ -48,7 +48,8 @@ export const ptBR = {
   "vote.title": "Qual vai ser a vibe?",
   "vote.votes": "VOTOS {done}/{total}",
   "vote.timeLabel": "tempo de votação",
-  "vote.top3": "TOP 3",
+  "vote.picked": "NA PARTIDA",
+  "vote.hint": "Cada jogador escolhe 1 gênero; um deles é sorteado a cada música",
 
   "play.nowPlaying": "TOCANDO",
   "play.timeLabel": "tempo da rodada",
@@ -88,10 +89,10 @@ export const ptBR = {
   "waiting.activeWith": "Ativo com {min} ou mais jogadores",
   "waiting.waitHost": "Aguardando o anfitrião iniciar…",
 
-  "picker.title": "Escolha até {max}",
-  "picker.selected": "{n} de {max} selecionados",
-  "picker.submit": "Enviar Votos",
-  "picker.sent": "Votos enviados ✓",
+  "picker.title": "Escolha seu gênero",
+  "picker.hint": "Um gênero por jogador. A cada música, um dos escolhidos é sorteado.",
+  "picker.submit": "Confirmar Gênero",
+  "picker.sent": "Gênero enviado ✓",
 
   "pad.points": "PONTOS",
   "pad.reveal": "Revelação",

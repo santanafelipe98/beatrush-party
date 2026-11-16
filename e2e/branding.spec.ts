@@ -94,9 +94,9 @@ onTest("logo visível em todas as fases da TV", async ({ browser }) => {
   await expectDeezerLogo(tv, "votação de gêneros");
 
   await ana.getByRole("button", { name: "Pop" }).click();
-  await ana.getByRole("button", { name: "Enviar Votos" }).click();
+  await ana.getByRole("button", { name: "Confirmar Gênero" }).click();
   await bob.getByRole("button", { name: "Pop" }).click();
-  await bob.getByRole("button", { name: "Enviar Votos" }).click();
+  await bob.getByRole("button", { name: "Confirmar Gênero" }).click();
 
   await expect(tv.getByTestId("tv-option-3")).toBeVisible({ timeout: 10_000 });
   await expectDeezerLogo(tv, "rodada");

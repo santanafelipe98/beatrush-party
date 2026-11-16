@@ -45,7 +45,8 @@ export const es: Messages = {
   "vote.title": "¿Cuál será el ambiente?",
   "vote.votes": "VOTOS {done}/{total}",
   "vote.timeLabel": "tiempo de votación",
-  "vote.top3": "TOP 3",
+  "vote.picked": "EN LA PARTIDA",
+  "vote.hint": "Cada jugador elige 1 género; en cada canción se sortea uno",
 
   "play.nowPlaying": "SONANDO",
   "play.timeLabel": "tiempo de la ronda",
@@ -85,10 +86,10 @@ export const es: Messages = {
   "waiting.activeWith": "Disponible con {min} o más jugadores",
   "waiting.waitHost": "Esperando que el anfitrión inicie…",
 
-  "picker.title": "Elige hasta {max}",
-  "picker.selected": "{n} de {max} seleccionados",
-  "picker.submit": "Enviar Votos",
-  "picker.sent": "Votos enviados ✓",
+  "picker.title": "Elige tu género",
+  "picker.hint": "Un género por jugador. En cada canción se sortea uno de los elegidos.",
+  "picker.submit": "Confirmar Género",
+  "picker.sent": "Género enviado ✓",
 
   "pad.points": "PUNTOS",
   "pad.reveal": "Revelación",

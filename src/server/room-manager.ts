@@ -5,6 +5,7 @@ import {
   DEFAULT_COUNTDOWN_MS,
   buildRound,
   closeGenreVote,
+  genrePicks,
   closeRound,
   createRoom,
   finishGame,
@@ -324,13 +325,14 @@ export class RoomManager {
   }
 
   private async loadTracks(rt: Runtime): Promise<RoundTracks[]> {
-    const { totalRounds, topGenres } = rt.room;
+    const { totalRounds } = rt.room;
+    const picks = genrePicks(rt.room);
     try {
-      return await selectRoundTracks(this.opts.music, topGenres, totalRounds, this.opts.rng);
+      return await selectRoundTracks(this.opts.music, picks, totalRounds, this.opts.rng);
     } catch (e) {
       console.error(`[music] ${this.opts.music.id} falhou:`, e);
       if (!this.opts.fallbackMusic) throw e;
-      return selectRoundTracks(this.opts.fallbackMusic, topGenres, totalRounds, this.opts.rng);
+      return selectRoundTracks(this.opts.fallbackMusic, picks, totalRounds, this.opts.rng);
     }
   }
 

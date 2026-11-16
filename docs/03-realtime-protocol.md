@@ -36,7 +36,7 @@ Cliente → servidor (`clientMessageSchema`):
 | `host:attach {code}` | TV | reanexa após recarregar a página |
 | `player:join {code, playerId, name, avatar}` | celular | entra/reconecta (`playerId` fica no `localStorage`) |
 | `player:start` | host-jogador | abre a votação de gêneros |
-| `player:vote {genres}` | celular | até 3 gêneros |
+| `player:vote {genres}` | celular | 1 gênero (array com no máximo 1) |
 | `player:answer {choice 0..3}` | celular | responde a rodada |
 | `player:replay` | celular | vota por jogar novamente |
 

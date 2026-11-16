@@ -59,18 +59,28 @@ describe("JoinForm", () => {
 });
 
 describe("GenrePicker", () => {
-  it("limita a 3 gêneros e envia", () => {
+  it("escolha única: tocar em outro gênero troca a escolha, e envia só 1", () => {
     const onSubmit = vi.fn();
     render(<GenrePicker voteEndsAt={Date.now() + 15_000} submitted={null} onSubmit={onSubmit} />);
-    for (const g of ["Pop", "Rock", "Funk", "MPB"]) fireEvent.click(screen.getByRole("button", { name: g }));
-    expect(screen.getByText("3 de 3 selecionados")).toBeTruthy();
-    fireEvent.click(screen.getByRole("button", { name: "Enviar Votos" }));
-    expect(onSubmit).toHaveBeenCalledWith(["Pop", "Rock", "Funk"]);
+    const send = screen.getByRole("button", { name: "Confirmar Gênero" }) as HTMLButtonElement;
+    expect(send.disabled).toBe(true);
+    for (const g of ["Pop", "Rock", "Funk"]) fireEvent.click(screen.getByRole("button", { name: new RegExp("^" + g) }));
+    expect(screen.getByRole("button", { name: /^Funk/ }).getAttribute("aria-pressed")).toBe("true");
+    expect(screen.getByRole("button", { name: /^Pop/ }).getAttribute("aria-pressed")).toBe("false");
+    fireEvent.click(send);
+    expect(onSubmit).toHaveBeenCalledWith(["Funk"]);
+  });
+  it("tocar de novo no gênero escolhido desmarca e desabilita o envio", () => {
+    render(<GenrePicker voteEndsAt={Date.now() + 15_000} submitted={null} onSubmit={() => {}} />);
+    const pop = () => screen.getByRole("button", { name: /^Pop/ });
+    fireEvent.click(pop());
+    fireEvent.click(pop());
+    expect((screen.getByRole("button", { name: "Confirmar Gênero" }) as HTMLButtonElement).disabled).toBe(true);
   });
   it("trava depois de enviado", () => {
     render(<GenrePicker voteEndsAt={Date.now() + 5000} submitted={["Pop"]} onSubmit={() => {}} />);
     expect((screen.getByRole("button", { name: /^Pop/ }) as HTMLButtonElement).disabled).toBe(true);
-    expect(screen.getByText("Votos enviados ✓")).toBeTruthy();
+    expect(screen.getByText("Gênero enviado ✓")).toBeTruthy();
   });
 });
 

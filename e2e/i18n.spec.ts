@@ -65,9 +65,9 @@ test("TV em inglês e celulares em idiomas diferentes jogam juntos", async ({ br
 
   // o voto usa o id interno do gênero: Eva (es) e Beto (pt) votam "Años 80"/"Anos 80" → mesmo gênero
   await es.getByRole("button", { name: "Años 80" }).click();
-  await es.getByRole("button", { name: "Enviar Votos" }).click();
+  await es.getByRole("button", { name: "Confirmar Género" }).click();
   await pt.getByRole("button", { name: "Anos 80" }).click();
-  await pt.getByRole("button", { name: "Enviar Votos" }).click();
+  await pt.getByRole("button", { name: "Confirmar Gênero" }).click();
 
   await expect(tv.getByText("What's the song?")).toBeVisible({ timeout: 10_000 });
   await expect(es.getByRole("status").last()).toContainText("Toca la figura");

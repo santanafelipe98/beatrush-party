@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { GENRES, MAX_GENRE_PICKS, type Genre } from "@/features/game";
+import { GENRES, type Genre } from "@/features/game";
 import { useCountdown } from "@/features/realtime/client/hooks";
 import { Button, ProgressBar, TimerPill } from "@/components/ui";
 import { cn } from "@/lib/cn";
@@ -21,13 +21,13 @@ export function GenrePicker({ voteEndsAt, submitted, onSubmit }: GenrePickerProp
   const locked = submitted !== null;
   const shown = locked ? submitted : picks;
 
-  const toggle = (g: Genre) =>
-    setPicks((p) => (p.includes(g) ? p.filter((x) => x !== g) : p.length < MAX_GENRE_PICKS ? [...p, g] : p));
+  // escolha única: tocar em outro gênero troca a escolha; tocar no mesmo desmarca
+  const toggle = (g: Genre) => setPicks((p) => (p[0] === g ? [] : [g]));
 
   return (
     <div className="mx-auto flex min-h-dvh w-full max-w-sm flex-col gap-3 px-5 pb-6 pt-10">
       <div className="flex items-center justify-between">
-        <h1 className="text-xl font-black">{t("picker.title", { max: MAX_GENRE_PICKS })}</h1>
+        <h1 className="text-xl font-black">{t("picker.title")}</h1>
         <TimerPill seconds={seconds} className="text-base" />
       </div>
       <ProgressBar label={t("vote.timeLabel")} value={(seconds / 20) * 100} fillClassName="bg-gradient-to-r from-amber to-red" />
@@ -56,7 +56,7 @@ export function GenrePicker({ voteEndsAt, submitted, onSubmit }: GenrePickerProp
       </div>
 
       <p className="text-center text-xs font-bold text-muted">
-        {t("picker.selected", { n: shown.length, max: MAX_GENRE_PICKS })}
+        {t("picker.hint")}
       </p>
       <Button
         variant="accent"

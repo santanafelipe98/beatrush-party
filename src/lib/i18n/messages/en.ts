@@ -45,7 +45,8 @@ export const en: Messages = {
   "vote.title": "What's the vibe?",
   "vote.votes": "VOTES {done}/{total}",
   "vote.timeLabel": "voting time",
-  "vote.top3": "TOP 3",
+  "vote.picked": "IN THE GAME",
+  "vote.hint": "Every player picks 1 genre; one of them is drawn for each song",
 
   "play.nowPlaying": "PLAYING",
   "play.timeLabel": "round time",
@@ -85,10 +86,10 @@ export const en: Messages = {
   "waiting.activeWith": "Enabled with {min} or more players",
   "waiting.waitHost": "Waiting for the host to start…",
 
-  "picker.title": "Pick up to {max}",
-  "picker.selected": "{n} of {max} selected",
-  "picker.submit": "Submit Votes",
-  "picker.sent": "Votes sent ✓",
+  "picker.title": "Pick your genre",
+  "picker.hint": "One genre per player. Each song, one of the picks is drawn.",
+  "picker.submit": "Confirm Genre",
+  "picker.sent": "Genre sent ✓",
 
   "pad.points": "POINTS",
   "pad.reveal": "Reveal",
