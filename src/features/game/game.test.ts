@@ -6,6 +6,7 @@ import {
   allVoted,
   buildRound,
   closeGenreVote,
+  genrePicks,
   closeRound,
   countdownStep,
   createRoom,
@@ -98,20 +99,33 @@ describe("votação de gêneros", () => {
   const voting = () => startGenreVote(lobby(), "a", 0, 1000);
 
   it("valida limite e gêneros", () => {
-    expectCode(() => voteGenres(voting(), "a", ["Pop", "Rock", "Funk", "MPB"]), "invalid_genres");
+    expectCode(() => voteGenres(voting(), "a", ["Pop", "Rock"]), "invalid_genres"); // só 1 por jogador
     expectCode(() => voteGenres(voting(), "a", ["Polka" as never]), "invalid_genres");
     expectCode(() => voteGenres(lobby(), "a", ["Pop"]), "wrong_phase");
   });
-  it("apura os 3 mais votados, desempate pela ordem da lista", () => {
+  it("cada jogador escolhe 1 gênero; todos os escolhidos entram, do mais ao menos escolhido", () => {
     let r = voting();
-    r = voteGenres(r, "a", ["Funk", "Pop"]);
-    r = voteGenres(r, "b", ["Funk", "Rock"]);
+    r = voteGenres(r, "a", ["Funk"]);
+    r = voteGenres(r, "b", ["Rock"]);
     expect(allVoted(r)).toBe(true);
-    expect(tallyGenres(r)[0]).toEqual({ genre: "Funk", votes: 2 });
-    expect(closeGenreVote(r).topGenres).toEqual(["Funk", "Pop", "Rock"]);
+    expect(genrePicks(r).sort()).toEqual(["Funk", "Rock"]);
+    expect(closeGenreVote(r).topGenres).toEqual(["Rock", "Funk"]); // empate: ordem de GENRES
   });
-  it("sem votos cai nos 3 primeiros gêneros", () => {
-    expect(closeGenreVote(voting()).topGenres).toEqual(["Pop", "Rock", "Hip-Hop"]);
+  it("gênero escolhido por 2 jogadores aparece 2x nas escolhas e lidera", () => {
+    const r = [["a", "Funk"], ["b", "Funk"], ["c", "Pop"]].reduce(
+      (acc, [id, g]) => voteGenres(acc, id, [g as never]),
+      startGenreVote(joinRoom(lobby(), { id: "c", name: "Duda", avatar: 3 }), "a", 0, 1000),
+    );
+    expect(genrePicks(r).filter((g) => g === "Funk")).toHaveLength(2);
+    expect(tallyGenres(r)[0]).toEqual({ genre: "Funk", votes: 2 });
+    expect(closeGenreVote(r).topGenres).toEqual(["Funk", "Pop"]);
+  });
+  it("votos antigos com vários gêneros valem só o primeiro", () => {
+    const r = { ...voting(), votes: { a: ["Funk", "Pop", "Rock"] as never } };
+    expect(genrePicks(r)).toEqual(["Funk"]);
+  });
+  it("sem votos não escolhe nada (quem monta a partida sorteia)", () => {
+    expect(closeGenreVote(voting()).topGenres).toEqual([]);
   });
 });
 

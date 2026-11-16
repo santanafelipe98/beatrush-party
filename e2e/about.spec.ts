@@ -62,9 +62,9 @@ test("TV: o aviso abre durante a partida e o jogo continua por trás", async ({ 
   }
   await ana.getByRole("button", { name: "Iniciar Seleção de Gêneros" }).click();
   await ana.getByRole("button", { name: "Pop" }).click();
-  await ana.getByRole("button", { name: "Enviar Votos" }).click();
+  await ana.getByRole("button", { name: "Confirmar Gênero" }).click();
   await bob.getByRole("button", { name: "Pop" }).click();
-  await bob.getByRole("button", { name: "Enviar Votos" }).click();
+  await bob.getByRole("button", { name: "Confirmar Gênero" }).click();
   await expect(tv.getByTestId("tv-option-3")).toBeVisible({ timeout: 10_000 });
 
   await tv.getByRole("button", { name: "Sobre", exact: true }).click();

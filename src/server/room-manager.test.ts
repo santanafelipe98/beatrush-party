@@ -74,10 +74,10 @@ describe("RoomManager", () => {
   it("joga uma partida completa e nunca vaza a resposta antes da revelação", async () => {
     send(ana, { type: "player:start" });
     expect(tv.view.phase).toBe("genre-vote");
-    send(ana, { type: "player:vote", genres: ["Pop", "Funk"] });
+    send(ana, { type: "player:vote", genres: ["Pop"] });
     send(bob, { type: "player:vote", genres: ["Funk"] });
     await flush();
-    expect(tv.view.topGenres[0]).toBe("Funk");
+    expect(tv.view.topGenres).toEqual(["Pop", "Funk"]);
 
     await vi.advanceTimersByTimeAsync(100);
     expect(tv.view.phase).toBe("playing");

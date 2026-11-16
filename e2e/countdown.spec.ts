@@ -37,9 +37,9 @@ async function setup(browser: Browser) {
   }
   await ana.getByRole("button", { name: "Iniciar Seleção de Gêneros" }).click();
   await ana.getByRole("button", { name: "Pop" }).click();
-  await ana.getByRole("button", { name: "Enviar Votos" }).click();
+  await ana.getByRole("button", { name: "Confirmar Gênero" }).click();
   await bob.getByRole("button", { name: "Pop" }).click();
-  await bob.getByRole("button", { name: "Enviar Votos" }).click();
+  await bob.getByRole("button", { name: "Confirmar Gênero" }).click();
   return { tv, ana, bob, close: () => Promise.all([tvCtx.close(), aCtx.close(), bCtx.close()]) };
 }
 

@@ -41,23 +41,22 @@ export function GenreVoteScreen({ view }: { view: RoomView }) {
           const votes = tally.find((r) => r.genre === genre)?.votes ?? 0;
           const pct = Math.round((votes / connected) * 100);
           const r = rankOf(genre);
-          const top = votes > 0 && r < 3;
+          const top = votes > 0; // todo gênero escolhido entra na partida
           return (
             <li key={genre} className={cn("flex flex-col justify-center gap-1.5", !top && "opacity-60")}>
               <div className="flex justify-between text-lg font-extrabold">
                 <span>
-                  {top && `#${r + 1} `}
-                  {t(`genre.${genre}`)}
+                                    {t(`genre.${genre}`)}
                 </span>
-                <span style={{ color: top ? TOP_COLORS[r] : "#9a9aab" }}>{pct}%</span>
+                <span style={{ color: top ? TOP_COLORS[r % 3] : "#9a9aab" }}>{pct}%</span>
               </div>
               <div className="h-4 overflow-hidden rounded-lg bg-surface-2">
                 <div
                   className="h-full rounded-lg transition-[width] duration-300"
                   style={{
                     width: `${(votes / maxVotes) * (pct || 0)}%`,
-                    background: top ? TOP_COLORS[r] : "#444458",
-                    boxShadow: top ? `0 0 14px ${TOP_COLORS[r]}88` : "none",
+                    background: top ? TOP_COLORS[r % 3] : "#444458",
+                    boxShadow: top ? `0 0 14px ${TOP_COLORS[r % 3]}88` : "none",
                   }}
                 />
               </div>
@@ -67,19 +66,23 @@ export function GenreVoteScreen({ view }: { view: RoomView }) {
       </ul>
 
       <footer className="flex items-center gap-4 rounded-2xl border border-line bg-surface px-5 py-3">
-        <span className="text-xs font-extrabold tracking-[0.15em] text-cyan">{t("vote.top3")}</span>
-        {ranked
-          .slice(0, 3)
-          .filter((r) => r.votes > 0)
-          .map((r, i) => (
-            <span
-              key={r.genre}
-              className="rounded-full px-5 py-2 text-lg font-extrabold"
-              style={{ background: TOP_COLORS[i], color: i === 2 ? "#0f0f12" : "#fff" }}
-            >
-              #{i + 1} {t(`genre.${r.genre}`)}
-            </span>
-          ))}
+        <span className="text-xs font-extrabold tracking-[0.15em] text-cyan">{t("vote.picked")}</span>
+        {ranked.some((r) => r.votes > 0) ? (
+          ranked
+            .filter((r) => r.votes > 0)
+            .map((r, i) => (
+              <span
+                key={r.genre}
+                className="rounded-full px-5 py-2 text-lg font-extrabold"
+                style={{ background: TOP_COLORS[i % 3], color: i % 3 === 2 ? "#0f0f12" : "#fff" }}
+              >
+                {t(`genre.${r.genre}`)}
+                {r.votes > 1 && ` ×${r.votes}`}
+              </span>
+            ))
+        ) : (
+          <span className="text-sm font-bold text-muted">{t("vote.hint")}</span>
+        )}
       </footer>
     </div>
   );

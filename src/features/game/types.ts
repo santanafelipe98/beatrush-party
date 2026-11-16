@@ -12,7 +12,8 @@ export type Genre = (typeof GENRES)[number];
 
 export const MAX_PLAYERS = 8;
 export const MIN_PLAYERS = 2;
-export const MAX_GENRE_PICKS = 3;
+/** Cada jogador escolhe 1 gênero; a cada turno um dos escolhidos é sorteado. */
+export const MAX_GENRE_PICKS = 1;
 export const OPTION_COUNT = 4;
 
 export type Phase = "lobby" | "genre-vote" | "playing" | "reveal" | "finished";

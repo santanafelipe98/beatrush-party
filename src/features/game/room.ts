@@ -122,21 +122,28 @@ export function allVoted(room: Room): boolean {
   return room.players.filter((p) => p.connected).every((p) => room.votes[p.id]);
 }
 
+/** O gênero escolhido por cada jogador (um por jogador, repetições mantidas). Lê só o 1º de votos antigos. */
+export function genrePicks(room: Room): Genre[] {
+  return Object.values(room.votes).flatMap((picks) => (picks[0] ? [picks[0]] : []));
+}
+
 export function tallyGenres(room: Room): { genre: Genre; votes: number }[] {
   const counts = new Map<Genre, number>(GENRES.map((g) => [g, 0]));
-  for (const picks of Object.values(room.votes))
-    for (const g of picks) counts.set(g, (counts.get(g) ?? 0) + 1);
+  for (const g of genrePicks(room)) counts.set(g, (counts.get(g) ?? 0) + 1);
   // sort estável: empates seguem a ordem de GENRES
   return GENRES.map((genre) => ({ genre, votes: counts.get(genre) ?? 0 })).sort(
     (a, b) => b.votes - a.votes,
   );
 }
 
-/** Encerra a votação e fixa os 3 gêneros mais votados. */
+/**
+ * Encerra a votação e fixa os gêneros escolhidos (distintos, do mais ao menos escolhido).
+ * Sem nenhuma escolha fica vazio: quem monta a partida sorteia os gêneros.
+ */
 export function closeGenreVote(room: Room): Room {
   requirePhase(room, "genre-vote");
   const topGenres = tallyGenres(room)
-    .slice(0, MAX_GENRE_PICKS)
+    .filter((t) => t.votes > 0)
     .map((t) => t.genre);
   return { ...room, topGenres, voteEndsAt: null };
 }

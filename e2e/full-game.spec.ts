@@ -35,9 +35,9 @@ test("partida completa: TV + 2 celulares, do lobby à revanche", async ({ browse
   await expect(tv.getByText("Qual vai ser a vibe?")).toBeVisible();
   await ana.getByRole("button", { name: "Pop" }).click();
   await ana.getByRole("button", { name: "Funk" }).click();
-  await ana.getByRole("button", { name: "Enviar Votos" }).click();
+  await ana.getByRole("button", { name: "Confirmar Gênero" }).click();
   await bob.getByRole("button", { name: "Pop" }).click();
-  await bob.getByRole("button", { name: "Enviar Votos" }).click();
+  await bob.getByRole("button", { name: "Confirmar Gênero" }).click();
 
   for (let round = 1; round <= 2; round++) {
     // Rodada: 4 opções na TV, formas no celular

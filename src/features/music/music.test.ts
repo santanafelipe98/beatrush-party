@@ -6,6 +6,7 @@ import {
   createDeezerProvider,
   createMockProvider,
   createMusicProvider,
+  planGenres,
   selectRoundTracks,
 } from "./index";
 
@@ -55,6 +56,13 @@ describe("selectRoundTracks", () => {
       expect(new Set(r.distractors.map((d) => d.title)).size).toBe(3);
     }
   });
+  it("cada turno toca o gênero planejado e a partida usa só os gêneros escolhidos", async () => {
+    const genreOfId = (id: string) => id.split("-")[1];
+    const rounds = await selectRoundTracks(createMockProvider(), ["Pop", "Pop", "Funk"], 12, () => 0.3);
+    const gs = rounds.map((r) => genreOfId(r.track.id));
+    expect(new Set(gs).size).toBe(2);
+    expect(gs.filter((g) => g === genreOfId("mock-" + GENRES.indexOf("Pop") + "-0")).length).toBe(8);
+  });
   it("as 3 alternativas seguem o gênero da música do turno", async () => {
     const genreOfId = (id: string) => id.split("-")[1];
     const rounds = await selectRoundTracks(createMockProvider(), ["Pop", "Rock", "Funk"], 12, () => 0.3);
@@ -73,6 +81,41 @@ describe("selectRoundTracks", () => {
   it("falha quando o catálogo é pequeno demais", async () => {
     const tiny = { id: "t", getTracksByGenre: async () => [] };
     await expect(selectRoundTracks(tiny, ["Pop"], 3)).rejects.toThrow("catálogo insuficiente");
+  });
+});
+
+describe("planGenres", () => {
+  const rng = (seed: number) => () => ((seed = (seed * 16807) % 2147483647) - 1) / 2147483646;
+  const count = (plan: string[], g: string) => plan.filter((x) => x === g).length;
+
+  it("só usa os gêneros escolhidos e tem o tamanho pedido", () => {
+    const plan = planGenres(["Pop", "Funk"], 12, rng(1));
+    expect(plan).toHaveLength(12);
+    expect(new Set(plan)).toEqual(new Set(["Pop", "Funk"]));
+  });
+  it("todo gênero escolhido toca (consome o saco antes de repetir), em várias sementes", () => {
+    for (let s = 1; s <= 50; s++) {
+      const plan = planGenres(["Pop", "Rock", "Funk", "MPB", "Sertanejo"], 12, rng(s));
+      for (const g of ["Pop", "Rock", "Funk", "MPB", "Sertanejo"]) expect(count(plan.slice(0, 5), g), `semente ${s}`).toBe(1);
+    }
+  });
+  it("gênero escolhido por 2 jogadores toca o dobro", () => {
+    const plan = planGenres(["Pop", "Pop", "Rock"], 12, rng(3));
+    expect(count(plan, "Pop")).toBe(8);
+    expect(count(plan, "Rock")).toBe(4);
+  });
+  it("não repete o mesmo gênero em turnos seguidos quando há outro (inclusive na virada do saco)", () => {
+    for (let s = 1; s <= 100; s++) {
+      const plan = planGenres(["Pop", "Rock"], 12, rng(s));
+      for (let i = 1; i < plan.length; i++) expect(plan[i], `semente ${s} pos ${i}`).not.toBe(plan[i - 1]);
+    }
+  });
+  it("com um gênero só, repete só ele", () => {
+    expect(new Set(planGenres(["Sertanejo"], 5, rng(1)))).toEqual(new Set(["Sertanejo"]));
+  });
+  it("sem escolhas sorteia 3 gêneros distintos", () => {
+    const plan = planGenres([], 12, rng(7));
+    expect(new Set(plan).size).toBe(3);
   });
 });
 

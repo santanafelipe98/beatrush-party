@@ -32,8 +32,8 @@ recebem URLs de áudio.
 
 ## Sorteio de rodadas
 
-`selectRoundTracks` busca um pool por gênero vencedor, remove duplicatas (título+artista), alterna
-entre gêneros e escolhe 3 distratores por faixa. `buildRound` (domínio) embaralha as 4 opções.
+`selectRoundTracks` planeja o gênero de cada turno (`planGenres`), busca um pool por gênero escolhido,
+remove duplicatas (título+artista), tira cada faixa do gênero do turno e escolhe 3 distratores do mesmo gênero. `buildRound` (domínio) embaralha as 4 opções.
 
 ## Link de áudio renovado a cada rodada
 
