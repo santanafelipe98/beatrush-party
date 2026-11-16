@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Montserrat } from "next/font/google";
+import { GoogleAnalytics, parseGaId } from "@/components/analytics/google-analytics";
 import { I18nProvider } from "@/lib/i18n/provider";
 import { getLocale, getTranslator } from "@/lib/i18n/server";
 import "./globals.css";
@@ -27,6 +28,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     <html lang={locale} className={`${montserrat.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col">
         <I18nProvider initialLocale={locale}>{children}</I18nProvider>
+        {/* lido em runtime (a página é dinâmica): trocar o ID não exige novo build */}
+        <GoogleAnalytics id={parseGaId(process.env.GA_MEASUREMENT_ID)} />
       </body>
     </html>
   );

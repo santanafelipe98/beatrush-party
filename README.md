@@ -21,6 +21,8 @@ npm run dev            # http://localhost:3000
 
 **Redis (opcional):** `npm run redis:up` e `REDIS_URL=redis://localhost:6379` no `.env.local` para as partidas sobreviverem a reinícios (ver [docs/08-persistence-redis.md](docs/08-persistence-redis.md)).
 
+**Google Analytics (opcional):** defina `GA_MEASUREMENT_ID=G-XXXXXXXXXX` (lido em runtime, sem rebuild). Sem ele nada é carregado. Veja [docs/09-analytics.md](docs/09-analytics.md) antes de publicar (consentimento/LGPD).
+
 Qualidade: `npm run verify` (lint + tipos + unitários) · `npm run test:e2e` (Playwright).
 
 Documentação em [docs/](docs/README.md).

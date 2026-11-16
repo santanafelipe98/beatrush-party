@@ -10,3 +10,4 @@
 | [06-future-work.md](06-future-work.md) | Melhorias adiadas (ex.: validação das fontes de gênero) |
 | [07-i18n.md](07-i18n.md) | Internacionalização (pt-BR, en, es) |
 | [08-persistence-redis.md](08-persistence-redis.md) | Persistência de salas no Redis |
+| [09-analytics.md](09-analytics.md) | Google Analytics opcional via `GA_MEASUREMENT_ID` |

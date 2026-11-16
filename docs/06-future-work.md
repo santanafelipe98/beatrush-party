@@ -32,3 +32,8 @@ Hoje há **uma instância** Node com estado persistido no Redis (`08-persistence
 - trocar o `restore()` de boot por carregamento sob demanda (`room_not_found` → tenta o Redis).
 Só vale se uma instância deixar de bastar (ela comporta muitas salas pequenas).
 
+
+## Banner de consentimento para o Google Analytics
+
+Hoje `GA_MEASUREMENT_ID` carrega o GA para todos. Para publicar para o público do Brasil/UE, carregar o script só
+após consentimento (LGPD/GDPR) e citar o Analytics na tela "Sobre". Ver `09-analytics.md`.
